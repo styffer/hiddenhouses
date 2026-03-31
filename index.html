@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Hidden Houses — Zodiac Candles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:    #0d0b14;
+  --deep:    #131020;
+  --dusk:    #1e1a30;
+  --dusk2:   #2a2442;
+  --nebula:  #3d3560;
+  --mist:    #8b84a8;
+  --star:    #c8bfe8;
+  --cream:   #f0ece4;
+  --parch:   #e8e0d0;
+  --gold:    #c4a45a;
+  --gold-lt: #d9bc7e;
+  --gold-dk: #8a6e30;
+  --rose:    #9b6b8a;
+  --teal:    #4a8b8c;
+  --border:  rgba(196,164,90,0.15);
+  --border2: rgba(196,164,90,0.3);
+  --borderm: rgba(200,191,232,0.12);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--void);
+  color:var(--cream);
+  font-family:'Jost',sans-serif;
+  font-weight:300;
+  overflow-x:hidden;
+}
+
+/* grain overlay */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:900;opacity:0.7;
+}
+
+/* ── STARS FIELD ── */
+.stars-bg{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 20%, rgba(61,53,96,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 20% 80%, rgba(74,139,140,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(155,107,138,0.06) 0%, transparent 50%);
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.4rem 2.5rem;
+  background:linear-gradient(to bottom,rgba(13,11,20,0.97) 55%,transparent);
+}
+
+.nav-logo-img{
+  height:40px;width:auto;
+  opacity:0.85;
+  filter:drop-shadow(0 0 8px rgba(196,164,90,0.25));
+  transition:opacity .3s,filter .3s;
+}
+.nav-logo-img:hover{opacity:1;filter:drop-shadow(0 0 12px rgba(196,164,90,0.45));}
+
+.nav-right{display:flex;align-items:center;gap:2.2rem;}
+
+.nav-link{
+  font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--mist);text-decoration:none;transition:color .3s;
+}
+.nav-link:hover{color:var(--gold);}
+
+.nav-btn{
+  font-family:'Jost',sans-serif;font-size:0.6rem;
+  letter-spacing:0.28em;text-transform:uppercase;
+  color:var(--cream);border:0.5px solid var(--border2);
+  padding:0.55rem 1.3rem;text-decoration:none;
+  transition:all .3s;background:transparent;
+}
+.nav-btn:hover{background:var(--gold);color:var(--void);border-color:var(--gold);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100svh;
+  display:grid;grid-template-rows:1fr auto;
+  padding:8rem 2.5rem 3rem;
+  position:relative;overflow:hidden;
+}
+
+/* orbital rings */
+.orb{
+  position:absolute;border-radius:50%;pointer-events:none;
+  border:0.5px solid rgba(196,164,90,0.07);
+}
+.orb-1{width:700px;height:700px;top:-250px;right:-280px;}
+.orb-2{width:500px;height:500px;top:-150px;right:-170px;}
+.orb-3{width:300px;height:300px;top:-50px;right:-60px;}
+.orb-4{width:140px;height:140px;top:50px;right:40px;border-color:rgba(196,164,90,0.12);}
+
+/* constellation dots */
+.const-dot{
+  position:absolute;border-radius:50%;
+  background:rgba(200,191,232,0.6);pointer-events:none;
+}
+
+/* watermark logo */
+.hero-watermark{
+  position:absolute;top:50%;right:-6%;
+  transform:translateY(-52%);
+  width:min(440px,88vw);
+  opacity:0.04;
+  filter:grayscale(1) brightness(1.5);
+  pointer-events:none;user-select:none;
+}
+
+/* rotating glyph */
+.hero-glyph{
+  position:absolute;top:5.5rem;right:2.5rem;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(4.5rem,15vw,11rem);
+  color:transparent;
+  -webkit-text-stroke:0.5px rgba(196,164,90,0.18);
+  pointer-events:none;user-select:none;line-height:1;
+  animation:glyphFloat 10s ease-in-out infinite;
+}
+@keyframes glyphFloat{
+  0%,100%{transform:translateY(0) rotate(-3deg);}
+  50%{transform:translateY(-16px) rotate(3deg);}
+}
+
+.hero-content{position:relative;z-index:2;max-width:560px;}
+
+.hero-eyebrow{
+  font-size:0.57rem;letter-spacing:0.5em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.8rem;
+  display:flex;align-items:center;gap:1rem;
+  opacity:0;animation:fadeUp .9s .2s forwards;
+}
+.eyebrow-line{width:2rem;height:0.5px;background:var(--gold);}
+
+.hero-title{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(2.8rem,10vw,6.5rem);
+  font-weight:400;line-height:0.92;letter-spacing:-0.01em;
+  margin-bottom:0.6rem;
+  opacity:0;animation:fadeUp .9s .35s forwards;
+}
+.hero-title em{font-style:italic;color:var(--gold-lt);}
+
+.hero-subtitle{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1rem,3vw,1.45rem);
+  font-weight:300;font-style:italic;
+  color:var(--mist);margin-bottom:1.8rem;
+  opacity:0;animation:fadeUp .9s .5s forwards;
+}
+
+.hero-location{
+  display:inline-flex;align-items:center;gap:0.6rem;
+  font-size:0.57rem;letter-spacing:0.28em;text-transform:uppercase;
+  color:var(--mist);margin-bottom:2rem;opacity:0.7;
+  opacity:0;animation:fadeUp .9s .6s forwards;
+}
+.loc-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:0.8;}
+
+#pretext-hero{
+  font-size:clamp(0.85rem,2.3vw,0.98rem);
+  line-height:1.9;color:var(--star);
+  max-width:40ch;margin-bottom:2.5rem;
+  opacity:0;animation:fadeUp .9s .72s forwards;
+}
+
+.hero-actions{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  opacity:0;animation:fadeUp .9s .9s forwards;
+}
+
+.btn-main{
+  background:var(--gold);color:var(--void);
+  font-family:'Jost',sans-serif;font-size:0.6rem;
+  font-weight:500;letter-spacing:0.28em;text-transform:uppercase;
+  padding:1rem 2.4rem;border:none;cursor:pointer;
+  text-decoration:none;transition:all .35s;display:inline-block;
+}
+.btn-main:hover{background:var(--gold-lt);}
+
+.btn-ghost{
+  background:transparent;color:var(--cream);
+  font-family:'Jost',sans-serif;font-size:0.6rem;
+  font-weight:300;letter-spacing:0.28em;text-transform:uppercase;
+  padding:1rem 2.4rem;border:0.5px solid var(--border2);
+  cursor:pointer;text-decoration:none;transition:all .35s;display:inline-block;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+
+.hero-bottom{
+  position:relative;z-index:2;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  padding-top:2.2rem;border-top:0.5px solid var(--borderm);
+  flex-wrap:wrap;gap:1rem;
+  opacity:0;animation:fadeUp .9s 1.05s forwards;
+}
+
+.hero-badges{display:flex;gap:2rem;flex-wrap:wrap;}
+.badge{
+  display:flex;align-items:center;gap:0.5rem;
+  font-size:0.56rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--mist);
+}
+.badge-star{color:var(--gold);font-size:0.45rem;}
+
+/* ── EVERY HOUSE TELLS A STORY ── */
+.story-section{
+  padding:6rem 2.5rem;
+  background:var(--deep);
+  border-top:0.5px solid var(--borderm);
+  border-bottom:0.5px solid var(--borderm);
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+
+/* thin orbital behind the phrase */
+.story-section::before{
+  content:'';
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:500px;height:500px;
+  border-radius:50%;
+  border:0.5px solid rgba(196,164,90,0.06);
+  pointer-events:none;
+}
+.story-section::after{
+  content:'';
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:320px;height:320px;
+  border-radius:50%;
+  border:0.5px solid rgba(196,164,90,0.05);
+  pointer-events:none;
+}
+
+.story-eyebrow{
+  font-size:0.56rem;letter-spacing:0.45em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:2rem;
+  display:flex;align-items:center;justify-content:center;gap:1rem;
+}
+.story-eyebrow::before,.story-eyebrow::after{
+  content:'';width:2.5rem;height:0.5px;background:var(--gold);opacity:0.6;
+}
+
+/* THE KEY PHRASE */
+.story-phrase{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(2rem,7vw,4.5rem);
+  font-weight:400;line-height:1.08;
+  letter-spacing:0.02em;
+  color:var(--cream);
+  margin-bottom:1rem;
+  position:relative;z-index:1;
+}
+.story-phrase em{
+  font-style:italic;
+  color:var(--gold-lt);
+  display:block;
+}
+
+.story-rule{
+  width:3rem;height:0.5px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:1.8rem auto;
+}
+
+#pretext-story{
+  font-size:clamp(0.85rem,2.2vw,0.98rem);
+  line-height:1.9;color:var(--mist);
+  max-width:44ch;margin:0 auto;
+  position:relative;z-index:1;
+}
+
+/* ── TICKER ── */
+.ticker{padding:1.1rem 0;background:var(--dusk2);overflow:hidden;}
+.ticker-track{display:flex;animation:tick 26s linear infinite;white-space:nowrap;}
+.ticker-item{
+  font-size:0.56rem;letter-spacing:0.4em;text-transform:uppercase;
+  color:var(--star);padding:0 3.5rem;
+  display:flex;align-items:center;gap:3.5rem;flex-shrink:0;
+}
+.ticker-item::after{content:'✦';font-size:0.4rem;color:var(--gold);}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ── ABOUT ── */
+.about-section{
+  padding:7rem 2.5rem;
+  background:var(--void);
+  display:grid;grid-template-columns:1fr;gap:4.5rem;
+}
+
+.about-logo-block{
+  display:flex;flex-direction:column;align-items:flex-start;gap:1.8rem;
+}
+.about-logo-img{
+  height:78px;width:auto;
+  opacity:0.82;
+  filter:drop-shadow(0 0 16px rgba(196,164,90,0.18));
+}
+.about-tagline{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(0.95rem,2.4vw,1.1rem);
+  font-style:italic;color:var(--mist);
+  letter-spacing:0.03em;line-height:1.65;
+  max-width:28ch;border-left:1.5px solid var(--gold-dk);
+  padding-left:1.2rem;
+}
+
+.about-text{}
+.about-title{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.8rem,5.5vw,3.2rem);
+  font-weight:400;line-height:1.05;margin-bottom:1.5rem;
+  color:var(--cream);
+}
+.about-title em{font-style:italic;color:var(--gold-lt);}
+
+#pretext-about{
+  font-size:clamp(0.86rem,2.3vw,0.98rem);
+  line-height:1.9;color:var(--mist);margin-bottom:2rem;
+}
+
+.about-specs{
+  display:grid;grid-template-columns:1fr 1fr;gap:0.5px;
+  background:var(--borderm);border:0.5px solid var(--borderm);
+}
+.spec{background:var(--deep);padding:1rem 1.2rem;}
+.spec-l{font-size:0.52rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--nebula);margin-bottom:0.35rem;}
+.spec-v{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--star);}
+
+/* ── SIGNS ── */
+.signs-section{
+  padding:7rem 2.5rem;
+  background:var(--deep);
+  border-top:0.5px solid var(--borderm);
+}
+
+.section-header{text-align:center;margin-bottom:3.5rem;}
+
+.section-eye{
+  font-size:0.56rem;letter-spacing:0.44em;text-transform:uppercase;color:var(--gold);
+  margin-bottom:1.2rem;
+  display:flex;align-items:center;justify-content:center;gap:1rem;
+}
+.section-eye::before,.section-eye::after{content:'';width:2rem;height:0.5px;background:var(--gold);opacity:0.6;}
+
+.section-title{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(2rem,6.5vw,3.8rem);font-weight:400;line-height:1.05;
+  color:var(--cream);
+}
+.section-title em{font-style:italic;color:var(--gold-lt);}
+
+#pretext-signs-sub{
+  font-size:0.9rem;line-height:1.85;color:var(--mist);
+  max-width:46ch;margin:1.2rem auto 0;text-align:center;
+}
+
+.signs-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:rgba(200,191,232,0.08);
+  border:0.5px solid rgba(200,191,232,0.08);
+  margin-top:3rem;
+}
+
+.sign-card{
+  background:var(--deep);padding:1.8rem 1.4rem;
+  position:relative;cursor:pointer;
+  transition:background .35s;overflow:hidden;
+  display:flex;flex-direction:column;gap:0.5rem;
+}
+.sign-card:hover{background:var(--dusk);}
+
+.sign-card::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transform:scaleX(0);transform-origin:center;
+  transition:transform .45s;
+}
+.sign-card:hover::after{transform:scaleX(1);}
+
+.sign-glyph{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.6rem;color:var(--nebula);line-height:1;
+  transition:transform .4s,color .3s;
+}
+.sign-card:hover .sign-glyph{transform:scale(1.1);color:var(--gold);}
+
+.sign-house{
+  font-size:0.52rem;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--gold-dk);margin-bottom:0.1rem;
+}
+
+.sign-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:0.95rem;font-weight:400;letter-spacing:0.06em;color:var(--cream);
+}
+
+.sign-desc{font-size:0.7rem;line-height:1.65;color:var(--mist);font-weight:300;}
+
+.sign-herbs{
+  font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--nebula);margin-top:0.2rem;line-height:1.5;
+}
+
+.sign-price{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;color:var(--star);
+  margin-top:auto;padding-top:0.8rem;
+  border-top:0.5px solid var(--borderm);
+}
+
+/* ── WORD FLOW ── */
+.flow-section{
+  padding:5.5rem 2.5rem;
+  background:var(--dusk);
+  border-top:0.5px solid var(--borderm);
+  border-bottom:0.5px solid var(--borderm);
+  position:relative;overflow:hidden;
+}
+
+.flow-watermark{
+  position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);
+  height:160px;opacity:0.045;
+  filter:grayscale(1) brightness(2);
+  pointer-events:none;
+}
+
+.flow-label{
+  font-size:0.55rem;letter-spacing:0.42em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:2.8rem;
+  display:flex;align-items:center;gap:1rem;
+}
+.flow-label::before{content:'';width:2rem;height:0.5px;background:var(--gold);opacity:0.6;}
+
+#pretext-word-flow{position:relative;min-height:140px;}
+
+/* ── CRAFT ── */
+.craft-section{
+  padding:7rem 2.5rem;
+  background:var(--void);
+  border-bottom:0.5px solid var(--borderm);
+}
+
+.craft-grid{display:grid;grid-template-columns:1fr;gap:5rem;}
+
+.craft-visual{
+  aspect-ratio:3/4;
+  background:var(--deep);
+  border:0.5px solid var(--borderm);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.craft-visual svg{width:58%;height:auto;}
+.craft-badge{
+  position:absolute;bottom:1.5rem;left:1.5rem;
+  background:var(--gold);color:var(--void);
+  font-size:0.5rem;letter-spacing:0.3em;text-transform:uppercase;padding:.38rem .75rem;
+  font-family:'Jost',sans-serif;font-weight:500;
+}
+
+.craft-info{display:flex;flex-direction:column;justify-content:center;}
+.craft-title{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.8rem,5.5vw,3.3rem);
+  font-weight:400;line-height:1.05;margin-bottom:1.5rem;color:var(--cream);
+}
+.craft-title em{font-style:italic;color:var(--gold-lt);}
+
+#pretext-craft{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1rem,2.8vw,1.2rem);
+  font-weight:400;line-height:1.78;color:var(--star);margin-bottom:2rem;
+}
+
+.craft-specs{
+  display:grid;grid-template-columns:1fr 1fr;gap:0.5px;
+  background:var(--borderm);border:0.5px solid var(--borderm);margin-bottom:2rem;
+}
+
+/* ── REVIEWS ── */
+.reviews-section{
+  padding:7rem 2.5rem;
+  background:var(--deep);
+}
+
+.reviews-grid{
+  display:grid;grid-template-columns:1fr;gap:1.5rem;margin-top:3.5rem;
+}
+
+.review-card{
+  border:0.5px solid var(--borderm);padding:2rem;background:var(--deep);
+  transition:background .3s;
+}
+.review-card:hover{background:var(--dusk);}
+
+.review-stars{color:var(--gold);font-size:0.62rem;letter-spacing:.2rem;margin-bottom:1rem;}
+
+.review-text{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:1.05rem;font-style:italic;line-height:1.72;
+  color:var(--star);margin-bottom:1.2rem;
+}
+
+.review-author{
+  font-size:0.56rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--mist);
+  display:flex;align-items:center;gap:0.8rem;
+}
+.review-sign{color:var(--gold);}
+
+/* ── CTA ── */
+.cta-section{
+  padding:9rem 2.5rem;
+  background:var(--dusk);
+  border-top:0.5px solid var(--borderm);
+  text-align:center;position:relative;overflow:hidden;
+}
+
+.cta-mandala{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:min(680px,130vw);height:auto;
+  opacity:0.04;pointer-events:none;
+  color:var(--star);
+}
+
+.cta-logo{
+  display:block;margin:0 auto 2.5rem;
+  height:52px;width:auto;
+  opacity:0.18;
+  filter:grayscale(1) brightness(2);
+}
+
+.cta-eyebrow{
+  font-size:0.56rem;letter-spacing:0.44em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.5rem;
+}
+
+.cta-title{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(2.2rem,8vw,5.5rem);font-weight:400;
+  line-height:1.0;margin-bottom:1rem;position:relative;z-index:1;color:var(--cream);
+}
+.cta-title em{font-style:italic;color:var(--gold-lt);}
+
+#pretext-cta{
+  font-size:clamp(0.86rem,2.3vw,0.98rem);line-height:1.88;
+  color:var(--mist);max-width:40ch;margin:0 auto 3rem;
+  position:relative;z-index:1;
+}
+
+.cta-btns{
+  display:flex;flex-direction:column;align-items:center;gap:1rem;
+  position:relative;z-index:1;
+}
+
+.btn-cta{
+  background:var(--gold);color:var(--void);
+  font-family:'Jost',sans-serif;font-size:0.6rem;
+  font-weight:500;letter-spacing:0.3em;text-transform:uppercase;
+  padding:1.1rem 3.8rem;border:none;cursor:pointer;
+  text-decoration:none;transition:all .35s;
+  display:inline-block;width:100%;max-width:360px;
+}
+.btn-cta:hover{background:var(--gold-lt);}
+
+.cta-note{font-size:0.58rem;letter-spacing:0.14em;color:var(--nebula);margin-top:0.8rem;}
+
+/* ── FOOTER ── */
+footer{
+  padding:2rem 2.5rem;border-top:0.5px solid var(--borderm);
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:1rem;background:var(--void);
+}
+.footer-logo-img{height:30px;width:auto;opacity:0.55;filter:brightness(1.5);}
+.footer-copy{font-size:0.54rem;letter-spacing:0.14em;color:var(--nebula);text-align:right;line-height:1.8;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(18px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .85s ease,transform .85s ease;}
+.reveal.in{opacity:1;transform:none;}
+.reveal-d1{transition-delay:.12s;}
+.reveal-d2{transition-delay:.26s;}
+.reveal-d3{transition-delay:.4s;}
+
+/* ── RESPONSIVE ── */
+@media(min-width:640px){
+  .about-section{grid-template-columns:1fr 1.7fr;}
+  .craft-grid{grid-template-columns:1fr 1fr;}
+  .reviews-grid{grid-template-columns:1fr 1fr;}
+  .cta-btns{flex-direction:row;justify-content:center;}
+}
+@media(max-width:520px){
+  .signs-grid{grid-template-columns:repeat(2,1fr);}
+  nav{padding:1.2rem 1.5rem;}
+  .nav-link{display:none;}
+  .hero,.about-section,.signs-section,.craft-section,.reviews-section,.cta-section{padding-left:1.5rem;padding-right:1.5rem;}
+  .story-section,.flow-section{padding-left:1.5rem;padding-right:1.5rem;}
+}
+
+/* HERO SPLIT LAYOUT */
+.hero{
+  grid-template-columns:1fr 1fr !important;
+  align-items:center !important;
+  padding:0 !important;
+}
+.hero-text-panel{
+  position:relative;z-index:2;
+  padding:9rem 3rem 4rem 2.5rem;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.hero-candle-panel{
+  position:relative;z-index:2;
+  height:100svh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.hero-candle-img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center center;
+  opacity:0;
+  animation:candleReveal 1.4s 0.5s forwards;
+  display:block;
+}
+.hero-candle-panel::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;
+  width:38%;
+  background:linear-gradient(to right,var(--void),transparent);
+  z-index:3;pointer-events:none;
+}
+.hero-candle-panel::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:28%;
+  background:linear-gradient(to top,var(--void),transparent);
+  z-index:3;pointer-events:none;
+}
+.candle-label{
+  position:absolute;bottom:3rem;right:2rem;z-index:4;
+  text-align:right;
+  opacity:0;animation:fadeUp .9s 1.2s forwards;
+}
+.candle-label-sign{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(0.9rem,1.5vw,1.1rem);
+  font-style:italic;color:var(--gold-lt);display:block;margin-bottom:0.2rem;
+}
+.candle-label-sub{font-size:0.54rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--mist);}
+@keyframes candleReveal{
+  from{opacity:0;transform:scale(1.04);}
+  to{opacity:1;transform:scale(1);}
+}
+.hero-badges{
+  display:flex;gap:1.8rem;flex-wrap:wrap;
+  margin-top:3rem;padding-top:2rem;
+  border-top:0.5px solid var(--borderm);
+  opacity:0;animation:fadeUp .9s 1.05s forwards;
+}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr !important;}
+  .hero-candle-panel{height:55svh !important;}
+  .hero-text-panel{padding:7rem 1.5rem 3rem !important;}
+  .hero-candle-panel::before{width:0 !important;}
+}
+</style>
+</head>
+<body>
+
+<div class="stars-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#"><img class="nav-logo-img" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="Hidden Houses"></a>
+  <div class="nav-right">
+    <a href="#signs" class="nav-link">The Houses</a>
+    <a href="#craft" class="nav-link">Our Craft</a>
+    <a href="#order" class="nav-btn">Shop Now</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="const-dot" style="width:2px;height:2px;top:25%;left:45%;opacity:.4;"></div>
+  <div class="const-dot" style="width:1.5px;height:1.5px;top:60%;left:42%;opacity:.3;"></div>
+  <div class="const-dot" style="width:2.5px;height:2.5px;top:40%;left:38%;opacity:.35;"></div>
+
+  <!-- LEFT: copy -->
+  <div class="hero-text-panel">
+    <p class="hero-eyebrow"><span class="eyebrow-line"></span>Handcrafted Zodiac Candles</p>
+    <h1 class="hero-title">
+      Born under<br><em>your sign.</em>
+    </h1>
+    <p class="hero-subtitle">7oz candle jars charged with the energy of your house</p>
+    <div class="hero-location"><span class="loc-dot"></span>Handmade in New York City</div>
+    <div id="pretext-hero">
+      Each of the twelve houses holds its own energy. We translate that into scent, with botanicals, crystals and essential oils aligned to your natal chart. Small batches. Deep intention.
+    </div>
+    <div class="hero-actions">
+      <a href="#signs" class="btn-main">Explore the houses</a>
+      <a href="#craft" class="btn-ghost">How it's made</a>
+    </div>
+    <div class="hero-badges">
+      <span class="badge"><span class="badge-star">✦</span>100% soy wax</span>
+      <span class="badge"><span class="badge-star">✦</span>Organic herbs</span>
+      <span class="badge"><span class="badge-star">✦</span>Real crystals</span>
+      <span class="badge"><span class="badge-star">✦</span>New York</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: candle photo -->
+  <div class="hero-candle-panel">
+    <img
+      class="hero-candle-img"
+      src="Gemini_Generated_Image_rxkb2zrxkb2zrxkb__1_.png"
+      alt="Pisces zodiac candle jar with herb toppings and constellation print">
+    <div class="hero-glyph" id="hero-glyph">♓</div>
+    <div class="candle-label">
+      <span class="candle-label-sign">Pisces · 12th house</span>
+      <span class="candle-label-sub">Sea lotus · Aquamarine · Water lily</span>
+    </div>
+  </div>
+</section>
+
+<!-- EVERY HOUSE TELLS A STORY -->
+<section class="story-section reveal">
+  <p class="story-eyebrow">The hidden language of the sky</p>
+  <h2 class="story-phrase">
+    Every house<br>
+    <em>tells a story.</em>
+  </h2>
+  <div class="story-rule"></div>
+  <p id="pretext-story">
+    In astrology, each of the twelve houses governs a different realm of life: identity, love, shadow, legacy. Our candles are made to resonate with yours. Light it, breathe it in, and find your way back to yourself.
+  </p>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">Organic soy wax</span>
+    <span class="ticker-item">Pure essential oils</span>
+    <span class="ticker-item">Herb & crystal toppings</span>
+    <span class="ticker-item">Sign-specific blends</span>
+    <span class="ticker-item">Gift-ready packaging</span>
+    <span class="ticker-item">Handmade in NYC</span>
+    <span class="ticker-item">12 astrological houses</span>
+    <span class="ticker-item">Organic soy wax</span>
+    <span class="ticker-item">Pure essential oils</span>
+    <span class="ticker-item">Herb & crystal toppings</span>
+    <span class="ticker-item">Sign-specific blends</span>
+    <span class="ticker-item">Gift-ready packaging</span>
+    <span class="ticker-item">Handmade in NYC</span>
+    <span class="ticker-item">12 astrological houses</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about-section">
+  <div class="about-logo-block reveal">
+    <img class="about-logo-img" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="Hidden Houses">
+    <p class="about-tagline">"Each sign rules a hidden house. We help you light it."</p>
+  </div>
+  <div class="about-text reveal reveal-d1">
+    <h2 class="about-title">Born from the stars,<br><em>poured by hand</em></h2>
+    <div id="pretext-about">
+      Hidden Houses began in an Astoria kitchen with one question: why does every zodiac candle smell the same? The twelve houses of astrology each carry distinct energy. The first house governs self. The fourth rules home. The eighth holds transformation. We spent months translating those archetypes into scent. The result is a candle that doesn't just smell good. It resonates.
+    </div>
+    <div class="about-specs">
+      <div class="spec"><div class="spec-l">Studio</div><div class="spec-v">Astoria, NY</div></div>
+      <div class="spec"><div class="spec-l">Batch size</div><div class="spec-v">Under 50 units</div></div>
+      <div class="spec"><div class="spec-l">Wax</div><div class="spec-v">100% soy, organic</div></div>
+      <div class="spec"><div class="spec-l">Burn time</div><div class="spec-v">40 to 50 hours</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- THE SIGNS -->
+<section class="signs-section" id="signs">
+  <div class="section-header reveal">
+    <p class="section-eye">The collection</p>
+    <h2 class="section-title">All <em>twelve houses</em></h2>
+    <p id="pretext-signs-sub">
+      Every candle is a doorway into a different house. Find yours and what it has been trying to tell you.
+    </p>
+  </div>
+
+  <div class="signs-grid reveal reveal-d1">
+    <div class="sign-card">
+      <div class="sign-glyph">♈</div>
+      <div class="sign-house">1st house · Self</div>
+      <div class="sign-name">Aries</div>
+      <div class="sign-desc">Cinnamon, black pepper & clove. The house of identity: bold, unfiltered, alive.</div>
+      <div class="sign-herbs">Red rose · Carnelian</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♉</div>
+      <div class="sign-house">2nd house · Value</div>
+      <div class="sign-name">Taurus</div>
+      <div class="sign-desc">Sandalwood, vanilla & oakmoss. The house of what you hold: pleasure, earth, permanence.</div>
+      <div class="sign-herbs">Lavender · Citrine</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♊</div>
+      <div class="sign-house">3rd house · Mind</div>
+      <div class="sign-name">Gemini</div>
+      <div class="sign-desc">Spearmint, lemon & neroli. The house of thought: curious, restless, always two things at once.</div>
+      <div class="sign-herbs">Chamomile · Moonstone</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♋</div>
+      <div class="sign-house">4th house · Home</div>
+      <div class="sign-name">Cancer</div>
+      <div class="sign-desc">Jasmine, white sage & amber. The house of roots: memory, shelter, the people you return to.</div>
+      <div class="sign-herbs">White sage · Selenite</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♌</div>
+      <div class="sign-house">5th house · Joy</div>
+      <div class="sign-name">Leo</div>
+      <div class="sign-desc">Sweet orange, copal & frankincense. The house of creation: radiant, generous, unapologetic.</div>
+      <div class="sign-herbs">Marigold · Tiger's eye</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♍</div>
+      <div class="sign-house">6th house · Service</div>
+      <div class="sign-name">Virgo</div>
+      <div class="sign-desc">Eucalyptus, rosemary & cedar. The house of ritual: precise, healing, devoted to the work.</div>
+      <div class="sign-herbs">Rosemary · Clear quartz</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♎</div>
+      <div class="sign-house">7th house · Union</div>
+      <div class="sign-name">Libra</div>
+      <div class="sign-desc">Rose, ylang-ylang & freesia. The house of the other: balance, beauty, the mirror we need.</div>
+      <div class="sign-herbs">Rose petals · Rose quartz</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♏</div>
+      <div class="sign-house">8th house · Shadow</div>
+      <div class="sign-name">Scorpio</div>
+      <div class="sign-desc">Patchouli, vetiver & myrrh resin. The house of depth: what is hidden, what transforms.</div>
+      <div class="sign-herbs">Obsidian · Myrrh</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♐</div>
+      <div class="sign-house">9th house · Vision</div>
+      <div class="sign-name">Sagittarius</div>
+      <div class="sign-desc">Benzoin, pine & cardamom. The house of meaning: philosophy, expansion, open sky.</div>
+      <div class="sign-herbs">Juniper · Lapis lazuli</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♑</div>
+      <div class="sign-house">10th house · Legacy</div>
+      <div class="sign-name">Capricorn</div>
+      <div class="sign-desc">Vetiver, olibanum & soft tobacco. The house of ambition: what you build, what you leave behind.</div>
+      <div class="sign-herbs">Onyx · Black pepper</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♒</div>
+      <div class="sign-house">11th house · Collective</div>
+      <div class="sign-name">Aquarius</div>
+      <div class="sign-desc">Violet, ozone & blue cardamom. The house of the future: vision, community, revolution.</div>
+      <div class="sign-herbs">Amethyst · Elderflower</div>
+      <div class="sign-price">$24</div>
+    </div>
+    <div class="sign-card">
+      <div class="sign-glyph">♓</div>
+      <div class="sign-house">12th house · Mystery</div>
+      <div class="sign-name">Pisces</div>
+      <div class="sign-desc">Sea lotus, water lily & aquatic musk. The house of the unseen: dreams, dissolution, return.</div>
+      <div class="sign-herbs">Aquamarine · Lotus flower</div>
+      <div class="sign-price">$24</div>
+    </div>
+  </div>
+</section>
+
+<!-- WORD FLOW -->
+<section class="flow-section reveal">
+  <img class="flow-watermark" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="" aria-hidden="true">
+  <p class="flow-label">What goes inside each house</p>
+  <div id="pretext-word-flow"></div>
+</section>
+
+<!-- CRAFT -->
+<section class="craft-section" id="craft">
+  <div class="craft-grid">
+    <div class="craft-visual reveal">
+      <img
+        class="craft-candle-photo"
+        src="Gemini_Generated_Image_rxkb2zrxkb2zrxkb__1_.png"
+        alt="Close up of Pisces zodiac candle with herb and crystal toppings"
+        style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;">
+      <!-- REMOVED SVG placeholder -->
+      <svg style="display:none" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="100" cy="140" r="94" fill="none" stroke="rgba(196,164,90,0.1)" stroke-width="0.5"/>
+        <circle cx="100" cy="140" r="70" fill="none" stroke="rgba(196,164,90,0.08)" stroke-width="0.5"/>
+        <circle cx="100" cy="140" r="46" fill="none" stroke="rgba(196,164,90,0.06)" stroke-width="0.5"/>
+        <polygon points="100,52 170,196 30,196" fill="none" stroke="rgba(196,164,90,0.08)" stroke-width="0.5"/>
+        <rect x="72" y="130" width="56" height="90" rx="3" fill="rgba(61,53,96,0.8)" stroke="rgba(196,164,90,0.25)" stroke-width="0.5"/>
+        <rect x="68" y="122" width="64" height="12" rx="4" fill="rgba(42,36,66,0.9)" stroke="rgba(196,164,90,0.2)" stroke-width="0.5"/>
+        <circle cx="88" cy="131" r="3.5" fill="rgba(122,140,120,0.5)"/>
+        <circle cx="100" cy="128" r="2.5" fill="rgba(196,164,90,0.4)"/>
+        <circle cx="112" cy="132" r="3" fill="rgba(155,107,138,0.4)"/>
+        <ellipse cx="95" cy="135" rx="5" ry="1.8" fill="rgba(122,140,120,0.35)" transform="rotate(-15 95 135)"/>
+        <line x1="100" y1="121" x2="100" y2="108" stroke="rgba(200,191,232,0.3)" stroke-width="0.8"/>
+        <ellipse cx="100" cy="96" rx="7" ry="13" fill="rgba(196,164,90,0.25)"/>
+        <ellipse cx="100" cy="99" rx="3.5" ry="8" fill="rgba(212,180,110,0.4)"/>
+        <text x="118" y="88" font-size="8" fill="rgba(196,164,90,0.5)" font-family="serif">✦</text>
+        <text x="78" y="94" font-size="6" fill="rgba(196,164,90,0.35)" font-family="serif">✦</text>
+        <text x="112" y="76" font-size="5" fill="rgba(196,164,90,0.25)" font-family="serif">✦</text>
+        <text x="100" y="222" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="8" fill="rgba(139,132,168,0.5)" letter-spacing="3">♎ LIBRA</text>
+      </svg>
+      <div class="craft-badge">7 oz amber jar</div>
+    </div>
+    <div class="craft-info reveal reveal-d1">
+      <p class="section-eye" style="justify-content:flex-start;">How it's made</p>
+      <h2 class="craft-title">Every candle<br>is a <em>ritual</em></h2>
+      <div id="pretext-craft">
+        Organic soy wax is melted in a double boiler, blended with pure essential oils and poured by hand into amber glass jars. Herb toppings, dried botanicals, crystal chips and flowers, each selected for its astrological resonance, are placed by hand, one layer at a time. No shortcuts. No machines. Just the work.
+      </div>
+      <div class="craft-specs">
+        <div class="spec"><div class="spec-l">Vessel</div><div class="spec-v">Amber jar · 7 oz</div></div>
+        <div class="spec"><div class="spec-l">Burn time</div><div class="spec-v">40 to 50 hrs</div></div>
+        <div class="spec"><div class="spec-l">Wax</div><div class="spec-v">Organic soy</div></div>
+        <div class="spec"><div class="spec-l">Fragrance</div><div class="spec-v">Pure essential oils</div></div>
+      </div>
+      <a href="#signs" class="btn-main" style="align-self:flex-start;">Find my house</a>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section">
+  <div class="section-header reveal">
+    <p class="section-eye">From our community</p>
+    <h2 class="section-title">They <em>felt</em> it</h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"The Scorpio blend stopped me in my tracks. Patchouli and myrrh together feel like stepping into the 8th house, the room where things transform. I'm on my third jar."</p>
+      <div class="review-author">Ashley T. <span class="review-sign">♏ Scorpio · 8th house</span></div>
+    </div>
+    <div class="review-card reveal reveal-d1">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"I bought it as a gift for a Libra and she cried when she smelled it. She said it smelled like balance. That's a 7th house candle doing exactly what it should."</p>
+      <div class="review-author">Rachel W. <span class="review-sign">♎ Libra · 7th house</span></div>
+    </div>
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"I didn't expect a candle to feel astrologically accurate, but the Aries one does. It's pure first house energy: all fire and forward motion. My desk has never smelled better."</p>
+      <div class="review-author">Lauren K. <span class="review-sign">♈ Aries · 1st house</span></div>
+    </div>
+    <div class="review-card reveal reveal-d1">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">"Pisces is the 12th house, the house of mystery and dreams. This candle smells like exactly that. I burn it before bed and it genuinely changes the feeling of the room."</p>
+      <div class="review-author">Megan S. <span class="review-sign">♓ Pisces · 12th house</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="order">
+  <svg class="cta-mandala" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g transform="translate(350,350)" stroke="currentColor" stroke-width="0.5" fill="none">
+      <circle r="320"/><circle r="260"/><circle r="200"/><circle r="140"/><circle r="80"/>
+      <line x1="0" y1="-320" x2="0" y2="320"/>
+      <line x1="-320" y1="0" x2="320" y2="0"/>
+      <line x1="-226" y1="-226" x2="226" y2="226"/>
+      <line x1="226" y1="-226" x2="-226" y2="226"/>
+      <polygon points="0,-240 208,120 -208,120"/>
+      <polygon points="0,240 208,-120 -208,-120"/>
+    </g>
+  </svg>
+
+  <img class="cta-logo" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="Hidden Houses">
+
+  <p class="cta-eyebrow">Limited edition · Monthly batches</p>
+  <h2 class="cta-title">
+    Which house<br>is <em>yours?</em>
+  </h2>
+
+  <p id="pretext-cta">
+    Every batch is hand-poured in small quantities. When it sells out, the next one takes 30 days. The houses wait for no one.
+  </p>
+
+  <div class="cta-btns">
+    <a href="#signs" class="btn-cta">Shop all 12 houses</a>
+    <a href="#craft" class="btn-ghost">Learn more</a>
+  </div>
+  <p class="cta-note">Free shipping over $65 · Secure checkout · Ships in 3 business days</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <img class="footer-logo-img" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="Hidden Houses">
+  <div class="footer-copy">
+    © 2026 Hidden Houses Studio · Astoria, NY<br>
+    Every house tells a story. ✦
+  </div>
+</footer>
+
+<!-- PRETEXT CORE -->
+<script>
+const Pretext = (() => {
+  const cv = document.createElement('canvas');
+  const cx = cv.getContext('2d');
+
+  function setFont(s){
+    cx.font=`${s.style||'normal'} ${s.weight||'300'} ${s.size} ${s.family}`;
+  }
+  function measure(words,style){
+    setFont(style);
+    const sw=cx.measureText(' ').width;
+    return{words:words.map(w=>({w,pw:cx.measureText(w).width})),spaceW:sw};
+  }
+  function breakLines(m,maxW){
+    const lines=[];let line=[],x=0;
+    m.words.forEach(wm=>{
+      const need=wm.pw+(line.length?m.spaceW:0);
+      if(line.length&&x+need>maxW){lines.push(line);line=[wm];x=wm.pw;}
+      else{line.push(wm);x+=need;}
+    });
+    if(line.length)lines.push(line);
+    return lines;
+  }
+  function render(container,text,style,opts={}){
+    const words=text.trim().split(/\s+/);
+    const W=container.clientWidth||320;
+    const m=measure(words,style);
+    const lines=breakLines(m,W);
+    const fs=parseFloat(style.size);
+    const lh=parseFloat(style.lh||1.75);
+    container.style.position='relative';
+    container.innerHTML='';
+    let y=0;
+    lines.forEach(line=>{
+      let x=0;
+      line.forEach((wm,i)=>{
+        const span=document.createElement('span');
+        span.textContent=wm.w;
+        const isHL=opts.highlight&&opts.highlight.some(h=>wm.w.replace(/[^a-zA-Z]/g,'').toLowerCase()===h.toLowerCase());
+        Object.assign(span.style,{
+          position:'absolute',left:x+'px',top:y+'px',
+          fontSize:style.size,fontFamily:style.family,
+          fontWeight:style.weight||'300',
+          fontStyle:isHL?'italic':(style.style||'normal'),
+          lineHeight:style.lh||'1.75',
+          color:isHL?(opts.hlColor||'var(--gold-lt)'):(opts.color||'inherit'),
+          whiteSpace:'nowrap',opacity:'0',
+          transition:`opacity .5s ${(y/fs+i)*26}ms, color .3s, transform .35s`,
+          cursor:'default',userSelect:'none',
+        });
+        if(opts.hover!==false){
+          span.addEventListener('mouseenter',()=>{span.style.color='var(--gold)';span.style.transform='translateY(-2px)';});
+          span.addEventListener('mouseleave',()=>{span.style.color=isHL?(opts.hlColor||'var(--gold-lt)'):(opts.color||'inherit');span.style.transform='';});
+        }
+        container.appendChild(span);
+        requestAnimationFrame(()=>setTimeout(()=>span.style.opacity='1',(y/fs+i)*30+(opts.delay||0)));
+        x+=wm.pw+(i<line.length-1?m.spaceW:0);
+      });
+      y+=fs*lh;
+    });
+    container.style.height=(y+fs*0.3)+'px';
+  }
+  return{render};
+})();
+
+function buildFlow(){
+  const el=document.getElementById('pretext-word-flow');
+  if(!el||el.clientWidth===0)return;
+  const text='Soy wax. Organic herbs. Pure essential oils. Real crystals. Intention. All poured by hand. For your house.';
+  const hl=['herbs','essential','oils','crystals','Intention','hand','house'];
+  Pretext.render(el,text,{
+    size:window.innerWidth<520?'20px':'28px',
+    family:"'Cormorant Garamond', Georgia, serif",
+    weight:'400',style:'normal',lh:'1.5',
+  },{
+    color:'rgba(200,191,232,0.45)',
+    highlight:hl,hlColor:'var(--gold-lt)',
+    delay:0,
+  });
+}
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.classList.add('in');
+    if(e.target.contains(document.getElementById('pretext-word-flow'))){
+      document.fonts.ready.then(buildFlow);
+    }
+  });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+let rt;
+window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(buildFlow,220);});
+
+const glyphs=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+let gi=11;
+const glyph=document.getElementById('hero-glyph');
+setInterval(()=>{
+  gi=(gi+1)%12;
+  glyph.style.transition='opacity .6s';glyph.style.opacity='0';
+  setTimeout(()=>{glyph.textContent=glyphs[gi];glyph.style.opacity='1';},630);
+},3500);
+</script>
+</body>
+</html>
