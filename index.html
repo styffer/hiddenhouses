@@ -1,1333 +1,751 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Hidden Houses — Zodiac Candles</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --void:    #0d0b14;
-  --deep:    #131020;
-  --dusk:    #1e1a30;
-  --dusk2:   #2a2442;
-  --nebula:  #3d3560;
-  --mist:    #8b84a8;
-  --star:    #c8bfe8;
-  --cream:   #f0ece4;
-  --parch:   #e8e0d0;
-  --gold:    #c4a45a;
-  --gold-lt: #d9bc7e;
-  --gold-dk: #8a6e30;
-  --rose:    #9b6b8a;
-  --teal:    #4a8b8c;
-  --border:  rgba(196,164,90,0.15);
-  --border2: rgba(196,164,90,0.3);
-  --borderm: rgba(200,191,232,0.12);
-}
-
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-
-body{
-  background:var(--void);
-  color:var(--cream);
-  font-family:'Jost',sans-serif;
-  font-weight:300;
-  overflow-x:hidden;
-}
-
-/* grain overlay */
-body::after{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");
-  pointer-events:none;z-index:900;opacity:0.7;
-}
-
-/* ── STARS FIELD ── */
-.stars-bg{
-  position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 70% 20%, rgba(61,53,96,0.35) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 20% 80%, rgba(74,139,140,0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(155,107,138,0.06) 0%, transparent 50%);
-}
-
-/* ── NAV ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:300;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:1.4rem 2.5rem;
-  background:linear-gradient(to bottom,rgba(13,11,20,0.97) 55%,transparent);
-}
-
-.nav-logo-img{
-  height:40px;width:auto;
-  opacity:0.85;
-  filter:drop-shadow(0 0 8px rgba(196,164,90,0.25));
-  transition:opacity .3s,filter .3s;
-}
-.nav-logo-img:hover{opacity:1;filter:drop-shadow(0 0 12px rgba(196,164,90,0.45));}
-
-.nav-right{display:flex;align-items:center;gap:2.2rem;}
-
-.nav-link{
-  font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;
-  color:var(--mist);text-decoration:none;transition:color .3s;
-}
-.nav-link:hover{color:var(--gold);}
-
-.nav-btn{
-  font-family:'Jost',sans-serif;font-size:0.6rem;
-  letter-spacing:0.28em;text-transform:uppercase;
-  color:var(--cream);border:0.5px solid var(--border2);
-  padding:0.55rem 1.3rem;text-decoration:none;
-  transition:all .3s;background:transparent;
-}
-.nav-btn:hover{background:var(--gold);color:var(--void);border-color:var(--gold);}
-
-/* ── HERO ── */
-.hero{
-  min-height:100svh;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  align-items:center;
-  padding:0;
-  position:relative;overflow:hidden;
-}
-
-/* orbital rings */
-.orb{
-  position:absolute;border-radius:50%;pointer-events:none;
-  border:0.5px solid rgba(196,164,90,0.07);
-}
-.orb-1{width:600px;height:600px;top:-200px;left:-220px;}
-.orb-2{width:420px;height:420px;top:-120px;left:-130px;}
-.orb-3{width:240px;height:240px;top:-30px;left:-40px;}
-
-
-/* constellation dots */
-.const-dot{
-  position:absolute;border-radius:50%;
-  background:rgba(200,191,232,0.6);pointer-events:none;
-}
-
-
-
-.hero-glyph{
-  position:absolute;top:3rem;right:2rem;z-index:4;
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(3rem,6vw,6rem);
-  color:transparent;
-  -webkit-text-stroke:0.5px rgba(196,164,90,0.22);
-  pointer-events:none;user-select:none;line-height:1;
-  opacity:0;
-  animation:glyphFloat 10s ease-in-out infinite, fadeUp .9s .8s forwards;
-}
-@keyframes glyphFloat{
-  0%,100%{transform:translateY(0) rotate(-3deg);}
-  50%{transform:translateY(-16px) rotate(3deg);}
-}
-
-
-
-.hero-eyebrow{
-  font-size:0.57rem;letter-spacing:0.5em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:1.8rem;
-  display:flex;align-items:center;gap:1rem;
-  opacity:0;animation:fadeUp .9s .2s forwards;
-}
-.eyebrow-line{width:2rem;height:0.5px;background:var(--gold);}
-
-.hero-title{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(2.8rem,10vw,6.5rem);
-  font-weight:400;line-height:0.92;letter-spacing:-0.01em;
-  margin-bottom:0.6rem;
-  opacity:0;animation:fadeUp .9s .35s forwards;
-}
-.hero-title em{font-style:italic;color:var(--gold-lt);}
-
-.hero-subtitle{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(1rem,3vw,1.45rem);
-  font-weight:300;font-style:italic;
-  color:var(--mist);margin-bottom:1.8rem;
-  opacity:0;animation:fadeUp .9s .5s forwards;
-}
-
-.hero-location{
-  display:inline-flex;align-items:center;gap:0.6rem;
-  font-size:0.57rem;letter-spacing:0.28em;text-transform:uppercase;
-  color:var(--mist);margin-bottom:2rem;opacity:0.7;
-  opacity:0;animation:fadeUp .9s .6s forwards;
-}
-.loc-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:0.8;}
-
-#pretext-hero{
-  font-size:clamp(0.85rem,2.3vw,0.98rem);
-  line-height:1.9;color:var(--star);
-  max-width:40ch;margin-bottom:2.5rem;
-  opacity:0;animation:fadeUp .9s .72s forwards;
-}
-
-.hero-actions{
-  display:flex;gap:1rem;flex-wrap:wrap;
-  opacity:0;animation:fadeUp .9s .9s forwards;
-}
-
-.btn-main{
-  background:var(--gold);color:var(--void);
-  font-family:'Jost',sans-serif;font-size:0.6rem;
-  font-weight:500;letter-spacing:0.28em;text-transform:uppercase;
-  padding:1rem 2.4rem;border:none;cursor:pointer;
-  text-decoration:none;transition:all .35s;display:inline-block;
-}
-.btn-main:hover{background:var(--gold-lt);}
-
-.btn-ghost{
-  background:transparent;color:var(--cream);
-  font-family:'Jost',sans-serif;font-size:0.6rem;
-  font-weight:300;letter-spacing:0.28em;text-transform:uppercase;
-  padding:1rem 2.4rem;border:0.5px solid var(--border2);
-  cursor:pointer;text-decoration:none;transition:all .35s;display:inline-block;
-}
-.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
-
-
-.badge{
-  display:flex;align-items:center;gap:0.5rem;
-  font-size:0.56rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--mist);
-}
-.badge-star{color:var(--gold);font-size:0.45rem;}
-
-/* ── EVERY HOUSE TELLS A STORY ── */
-.story-section{
-  padding:6rem 2.5rem;
-  background:var(--deep);
-  border-top:0.5px solid var(--borderm);
-  border-bottom:0.5px solid var(--borderm);
-  text-align:center;
-  position:relative;overflow:hidden;
-}
-
-/* thin orbital behind the phrase */
-.story-section::before{
-  content:'';
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:500px;height:500px;
-  border-radius:50%;
-  border:0.5px solid rgba(196,164,90,0.06);
-  pointer-events:none;
-}
-.story-section::after{
-  content:'';
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:320px;height:320px;
-  border-radius:50%;
-  border:0.5px solid rgba(196,164,90,0.05);
-  pointer-events:none;
-}
-
-.story-eyebrow{
-  font-size:0.56rem;letter-spacing:0.45em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:2rem;
-  display:flex;align-items:center;justify-content:center;gap:1rem;
-}
-.story-eyebrow::before,.story-eyebrow::after{
-  content:'';width:2.5rem;height:0.5px;background:var(--gold);opacity:0.6;
-}
-
-/* THE KEY PHRASE */
-.story-phrase{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(2rem,7vw,4.5rem);
-  font-weight:400;line-height:1.08;
-  letter-spacing:0.02em;
-  color:var(--cream);
-  margin-bottom:1rem;
-  position:relative;z-index:1;
-}
-.story-phrase em{
-  font-style:italic;
-  color:var(--gold-lt);
-  display:block;
-}
-
-.story-rule{
-  width:3rem;height:0.5px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  margin:1.8rem auto;
-}
-
-#pretext-story{
-  font-size:clamp(0.85rem,2.2vw,0.98rem);
-  line-height:1.9;color:var(--mist);
-  max-width:44ch;margin:0 auto;
-  position:relative;z-index:1;
-}
-
-/* ── TICKER ── */
-.ticker{padding:1.1rem 0;background:var(--dusk2);overflow:hidden;position:relative;z-index:1;}
-.ticker-track{display:flex;animation:tick 26s linear infinite;white-space:nowrap;}
-.ticker-item{
-  font-size:0.56rem;letter-spacing:0.4em;text-transform:uppercase;
-  color:var(--star);padding:0 3.5rem;
-  display:flex;align-items:center;gap:3.5rem;flex-shrink:0;
-}
-.ticker-item::after{content:'✦';font-size:0.4rem;color:var(--gold);}
-@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-
-/* ── ABOUT ── */
-.about-section{
-  padding:7rem 2.5rem;
-  background:var(--void);
-  display:grid;grid-template-columns:1fr;gap:4.5rem;
-}
-
-.about-logo-block{
-  display:flex;flex-direction:column;align-items:flex-start;gap:1.8rem;
-}
-.about-logo-img{
-  height:78px;width:auto;
-  opacity:0.82;
-  filter:drop-shadow(0 0 16px rgba(196,164,90,0.18));
-}
-.about-tagline{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(0.95rem,2.4vw,1.1rem);
-  font-style:italic;color:var(--mist);
-  letter-spacing:0.03em;line-height:1.65;
-  max-width:28ch;border-left:1.5px solid var(--gold-dk);
-  padding-left:1.2rem;
-}
-
-.about-text{}
-.about-title{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(1.8rem,5.5vw,3.2rem);
-  font-weight:400;line-height:1.05;margin-bottom:1.5rem;
-  color:var(--cream);
-}
-.about-title em{font-style:italic;color:var(--gold-lt);}
-
-#pretext-about{
-  font-size:clamp(0.86rem,2.3vw,0.98rem);
-  line-height:1.9;color:var(--mist);margin-bottom:2rem;
-}
-
-.about-specs{
-  display:grid;grid-template-columns:1fr 1fr;gap:0.5px;
-  background:var(--borderm);border:0.5px solid var(--borderm);
-}
-.spec{background:var(--deep);padding:1rem 1.2rem;}
-.spec-l{font-size:0.52rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--nebula);margin-bottom:0.35rem;}
-.spec-v{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--star);}
-
-/* ── SIGNS ── */
-.signs-section{
-  padding:7rem 2.5rem;
-  background:var(--deep);
-  border-top:0.5px solid var(--borderm);
-}
-
-.section-header{text-align:center;margin-bottom:3.5rem;}
-
-.section-eye{
-  font-size:0.56rem;letter-spacing:0.44em;text-transform:uppercase;color:var(--gold);
-  margin-bottom:1.2rem;
-  display:flex;align-items:center;justify-content:center;gap:1rem;
-}
-.section-eye::before,.section-eye::after{content:'';width:2rem;height:0.5px;background:var(--gold);opacity:0.6;}
-
-.section-title{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(2rem,6.5vw,3.8rem);font-weight:400;line-height:1.05;
-  color:var(--cream);
-}
-.section-title em{font-style:italic;color:var(--gold-lt);}
-
-#pretext-signs-sub{
-  font-size:0.9rem;line-height:1.85;color:var(--mist);
-  max-width:46ch;margin:1.2rem auto 0;text-align:center;
-}
-
-.signs-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:1px;background:rgba(200,191,232,0.08);
-  border:0.5px solid rgba(200,191,232,0.08);
-  margin-top:3rem;
-}
-
-.sign-card{
-  background:var(--deep);padding:1.8rem 1.4rem;
-  position:relative;cursor:pointer;
-  transition:background .35s;overflow:hidden;
-  display:flex;flex-direction:column;gap:0.5rem;
-}
-.sign-card:hover{background:var(--dusk);}
-
-.sign-card::after{
-  content:'';position:absolute;
-  bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  transform:scaleX(0);transform-origin:center;
-  transition:transform .45s;
-}
-.sign-card:hover::after{transform:scaleX(1);}
-
-.sign-glyph{
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.6rem;color:var(--nebula);line-height:1;
-  transition:transform .4s,color .3s;
-}
-.sign-card:hover .sign-glyph{transform:scale(1.1);color:var(--gold);}
-
-.sign-house{
-  font-size:0.52rem;letter-spacing:0.3em;text-transform:uppercase;
-  color:var(--gold-dk);margin-bottom:0.1rem;
-}
-
-.sign-name{
-  font-family:'Cormorant Garamond',serif;
-  font-size:0.95rem;font-weight:400;letter-spacing:0.06em;color:var(--cream);
-}
-
-.sign-desc{font-size:0.7rem;line-height:1.65;color:var(--mist);font-weight:300;}
-
-.sign-herbs{
-  font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;
-  color:var(--nebula);margin-top:0.2rem;line-height:1.5;
-}
-
-.sign-price{
-  font-family:'Cormorant Garamond',serif;
-  font-size:1rem;color:var(--star);
-  margin-top:auto;padding-top:0.8rem;
-  border-top:0.5px solid var(--borderm);
-}
-
-/* ── WORD FLOW ── */
-.flow-section{
-  padding:5.5rem 2.5rem;
-  background:var(--dusk);
-  border-top:0.5px solid var(--borderm);
-  border-bottom:0.5px solid var(--borderm);
-  position:relative;overflow:hidden;
-}
-
-.flow-watermark{
-  position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);
-  height:160px;opacity:0.045;
-  filter:grayscale(1) brightness(2);
-  pointer-events:none;
-}
-
-.flow-label{
-  font-size:0.55rem;letter-spacing:0.42em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:2.8rem;
-  display:flex;align-items:center;gap:1rem;
-}
-.flow-label::before{content:'';width:2rem;height:0.5px;background:var(--gold);opacity:0.6;}
-
-#pretext-word-flow{position:relative;min-height:140px;}
-
-/* ── CRAFT ── */
-.craft-section{
-  padding:7rem 2.5rem;
-  background:var(--void);
-  border-bottom:0.5px solid var(--borderm);
-}
-
-.craft-grid{display:grid;grid-template-columns:1fr;gap:5rem;}
-
-.craft-visual{
-  aspect-ratio:3/4;
-  background:var(--deep);
-  border:0.5px solid var(--borderm);
-  position:relative;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-}
-.craft-visual svg{width:58%;height:auto;}
-.craft-badge{
-  position:absolute;bottom:1.5rem;left:1.5rem;
-  background:var(--gold);color:var(--void);
-  font-size:0.5rem;letter-spacing:0.3em;text-transform:uppercase;padding:.38rem .75rem;
-  font-family:'Jost',sans-serif;font-weight:500;
-}
-
-.craft-info{display:flex;flex-direction:column;justify-content:center;}
-.craft-title{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(1.8rem,5.5vw,3.3rem);
-  font-weight:400;line-height:1.05;margin-bottom:1.5rem;color:var(--cream);
-}
-.craft-title em{font-style:italic;color:var(--gold-lt);}
-
-#pretext-craft{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(1rem,2.8vw,1.2rem);
-  font-weight:400;line-height:1.78;color:var(--star);margin-bottom:2rem;
-}
-
-.craft-specs{
-  display:grid;grid-template-columns:1fr 1fr;gap:0.5px;
-  background:var(--borderm);border:0.5px solid var(--borderm);margin-bottom:2rem;
-}
-
-/* ── REVIEWS ── */
-.reviews-section{
-  padding:7rem 2.5rem;
-  background:var(--deep);
-}
-
-.reviews-grid{
-  display:grid;grid-template-columns:1fr;gap:1.5rem;margin-top:3.5rem;
-}
-
-.review-card{
-  border:0.5px solid var(--borderm);padding:2rem;background:var(--deep);
-  transition:background .3s;
-}
-.review-card:hover{background:var(--dusk);}
-
-.review-stars{color:var(--gold);font-size:0.62rem;letter-spacing:.2rem;margin-bottom:1rem;}
-
-.review-text{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:1.05rem;font-style:italic;line-height:1.72;
-  color:var(--star);margin-bottom:1.2rem;
-}
-
-.review-author{
-  font-size:0.56rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--mist);
-  display:flex;align-items:center;gap:0.8rem;
-}
-.review-sign{color:var(--gold);}
-
-/* ── CTA ── */
-.cta-section{
-  padding:9rem 2.5rem;
-  background:var(--dusk);
-  border-top:0.5px solid var(--borderm);
-  text-align:center;position:relative;overflow:hidden;
-}
-
-.cta-mandala{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:min(680px,130vw);height:auto;
-  opacity:0.04;pointer-events:none;
-  color:var(--star);
-}
-
-.cta-logo{
-  display:block;margin:0 auto 2.5rem;
-  height:52px;width:auto;
-  opacity:0.18;
-  filter:grayscale(1) brightness(2);
-}
-
-.cta-eyebrow{
-  font-size:0.56rem;letter-spacing:0.44em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:1.5rem;
-}
-
-.cta-title{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:clamp(2.2rem,8vw,5.5rem);font-weight:400;
-  line-height:1.0;margin-bottom:1rem;position:relative;z-index:1;color:var(--cream);
-}
-.cta-title em{font-style:italic;color:var(--gold-lt);}
-
-#pretext-cta{
-  font-size:clamp(0.86rem,2.3vw,0.98rem);line-height:1.88;
-  color:var(--mist);max-width:40ch;margin:0 auto 3rem;
-  position:relative;z-index:1;
-}
-
-.cta-btns{
-  display:flex;flex-direction:column;align-items:center;gap:1rem;
-  position:relative;z-index:1;
-}
-
-.btn-cta{
-  background:var(--gold);color:var(--void);
-  font-family:'Jost',sans-serif;font-size:0.6rem;
-  font-weight:500;letter-spacing:0.3em;text-transform:uppercase;
-  padding:1.1rem 3.8rem;border:none;cursor:pointer;
-  text-decoration:none;transition:all .35s;
-  display:inline-block;width:100%;max-width:360px;
-}
-.btn-cta:hover{background:var(--gold-lt);}
-
-.cta-note{font-size:0.58rem;letter-spacing:0.14em;color:var(--nebula);margin-top:0.8rem;}
-
-/* ── FOOTER ── */
-footer{
-  padding:2rem 2.5rem;border-top:0.5px solid var(--borderm);
-  display:flex;justify-content:space-between;align-items:center;
-  flex-wrap:wrap;gap:1rem;background:var(--void);
-}
-.footer-logo-img{height:30px;width:auto;opacity:0.55;filter:brightness(1.5);}
-.footer-copy{font-size:0.54rem;letter-spacing:0.14em;color:var(--nebula);text-align:right;line-height:1.8;}
-
-/* ── ANIMATIONS ── */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(18px);}
-  to{opacity:1;transform:translateY(0);}
-}
-.reveal{opacity:0;transform:translateY(26px);transition:opacity .85s ease,transform .85s ease;}
-.reveal.in{opacity:1;transform:none;}
-.reveal-d1{transition-delay:.12s;}
-.reveal-d2{transition-delay:.26s;}
-.reveal-d3{transition-delay:.4s;}
-
-/* ── RESPONSIVE ── */
-@media(min-width:640px){
-  .about-section{grid-template-columns:1fr 1.7fr;}
-  .craft-grid{grid-template-columns:1fr 1fr;}
-  .reviews-grid{grid-template-columns:1fr 1fr;}
-  .cta-btns{flex-direction:row;justify-content:center;}
-}
-@media(max-width:520px){
-  .signs-grid{grid-template-columns:repeat(2,1fr);}
-  nav{padding:1.2rem 1.5rem;}
-  .nav-link{display:none;}
-  .hero,.about-section,.signs-section,.craft-section,.reviews-section,.cta-section{padding-left:1.5rem;padding-right:1.5rem;}
-  .story-section,.flow-section{padding-left:1.5rem;padding-right:1.5rem;}
-}
-
-.hero-text-panel{
-  position:relative;z-index:2;
-  padding:9rem 3rem 4rem 2.5rem;
-  display:flex;flex-direction:column;justify-content:center;
-}
-.hero-candle-panel{
-  position:relative;z-index:2;
-  height:100svh;
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-}
-.hero-candle-img{
-  width:100%;height:100%;
-  object-fit:cover;object-position:center center;
-  opacity:0;
-  animation:candleReveal 1.4s 0.5s forwards, candleFloat 6s 2s ease-in-out infinite;
-  display:block;
-  transform-origin:center center;
-}
-@keyframes candleFloat{
-  0%,100%{transform:translateY(0px) scale(1);}
-  30%{transform:translateY(-10px) scale(1.008);}
-  60%{transform:translateY(-6px) scale(1.004);}
-  80%{transform:translateY(-13px) scale(1.01);}
-}
-.hero-candle-panel::before{
-  content:'';position:absolute;top:0;left:0;bottom:0;
-  width:38%;
-  background:linear-gradient(to right,var(--void),transparent);
-  z-index:3;pointer-events:none;
-}
-.hero-candle-panel::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;
-  height:28%;
-  background:linear-gradient(to top,var(--void),transparent);
-  z-index:3;pointer-events:none;
-}
-.candle-label{
-  position:absolute;bottom:3rem;right:2rem;z-index:4;
-  text-align:right;
-  opacity:0;animation:fadeUp .9s 1.2s forwards;
-}
-.candle-label-sign{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(0.9rem,1.5vw,1.1rem);
-  font-style:italic;color:var(--gold-lt);display:block;margin-bottom:0.2rem;
-}
-.candle-label-sub{font-size:0.54rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--mist);}
-@keyframes candleReveal{
-  from{opacity:0;}
-  to{opacity:1;}
-}
-.hero-badges{
-  display:flex;gap:1.8rem;flex-wrap:wrap;
-  margin-top:3rem;padding-top:2rem;
-  border-top:0.5px solid var(--borderm);
-  opacity:0;animation:fadeUp .9s 1.05s forwards;
-}
-@media(max-width:768px){
-  .hero{
-    grid-template-columns:1fr;
-    display:flex;
-    flex-direction:column;
-    padding:0;
-  }
-  .hero-text-panel{
-    display:contents;
-  }
-  .hero-eyebrow{order:1;margin:7rem 1.5rem 1.4rem;width:calc(100% - 3rem);}
-  .hero-title{order:2;margin:0 1.5rem 0.6rem;width:calc(100% - 3rem);}
-  .hero-subtitle{order:3;margin:0 1.5rem 0;width:calc(100% - 3rem);}
-  .hero-candle-panel{order:4;height:52svh;width:100%;}
-  .hero-location{order:5;margin:1.4rem 1.5rem 0;width:calc(100% - 3rem);}
-  #pretext-hero{order:6;margin:0 1.5rem 1.8rem;width:calc(100% - 3rem);}
-  .hero-actions{order:7;margin:0 1.5rem;width:calc(100% - 3rem);}
-  .hero-badges{order:8;margin:0 1.5rem 3rem;width:calc(100% - 3rem);}
-  .hero-candle-panel::before{width:0;}
-  .hero-candle-panel::after{height:20%;}
-  .candle-label{bottom:1.5rem;right:1rem;}
-}
-
-/* Shooting star orbit overlay */
-#starCanvas{
-  position:absolute;
-  inset:0;
-  width:100%;height:100%;
-  z-index:4;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity 1.4s;
-  display:block;
-  background:transparent;
-}
-</style>
-</head>
-<body>
-
-<div class="stars-bg"></div>
-
-<!-- NAV -->
-<nav>
-  <a href="#"><img class="nav-logo-img" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="Hidden Houses"></a>
-  <div class="nav-right">
-    <a href="#signs" class="nav-link">The Houses</a>
-    <a href="#craft" class="nav-link">Our Craft</a>
-    <a href="#order" class="nav-btn">Shop Now</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <div class="const-dot" style="width:2px;height:2px;top:25%;left:45%;opacity:.4;"></div>
-  <div class="const-dot" style="width:1.5px;height:1.5px;top:60%;left:42%;opacity:.3;"></div>
-  <div class="const-dot" style="width:2.5px;height:2.5px;top:40%;left:38%;opacity:.35;"></div>
-
-  <!-- LEFT: copy -->
-  <div class="hero-text-panel">
-    <p class="hero-eyebrow"><span class="eyebrow-line"></span>Handcrafted Zodiac Candles</p>
-    <h1 class="hero-title">
-      Born under<br><em>your sign.</em>
-    </h1>
-    <p class="hero-subtitle">7oz candle jars charged with the energy of your house</p>
-    <div class="hero-location"><span class="loc-dot"></span>Handmade in New York City</div>
-    <div id="pretext-hero">
-      Each of the twelve houses holds its own energy. We translate that into scent, with botanicals, crystals and essential oils aligned to your natal chart. Small batches. Deep intention.
-    </div>
-    <div class="hero-actions">
-      <a href="#signs" class="btn-main">Explore the houses</a>
-      <a href="#craft" class="btn-ghost">How it's made</a>
-    </div>
-    <div class="hero-badges">
-      <span class="badge"><span class="badge-star">✦</span>100% soy wax</span>
-      <span class="badge"><span class="badge-star">✦</span>Organic herbs</span>
-      <span class="badge"><span class="badge-star">✦</span>Real crystals</span>
-      <span class="badge"><span class="badge-star">✦</span>New York</span>
-    </div>
-  </div>
-
-  <!-- RIGHT: candle photo -->
-  <div class="hero-candle-panel">
-    <img
-      class="hero-candle-img"
-      src="Gemini_Generated_Image_rxkb2zrxkb2zrxkb.png"
-      alt="Pisces zodiac candle jar with herb toppings and constellation print">
-    <div class="hero-glyph" id="hero-glyph">♓</div>
-    <!-- Shooting star orbit — Three.js 3D -->
-    <canvas class="star-orbit" id="starCanvas" aria-hidden="true"></canvas>
-
-    <div class="candle-label">
-      <span class="candle-label-sign">Pisces · 12th house</span>
-      <span class="candle-label-sub">Sea lotus · Aquamarine · Water lily</span>
-    </div>
-  </div>
-</section>
-
-<!-- EVERY HOUSE TELLS A STORY -->
-<section class="story-section reveal">
-  <p class="story-eyebrow">The hidden language of the sky</p>
-  <h2 class="story-phrase">
-    Every house<br>
-    <em>tells a story.</em>
-  </h2>
-  <div class="story-rule"></div>
-  <p id="pretext-story">
-    In astrology, each of the twelve houses governs a different realm of life: identity, love, shadow, legacy. Our candles are made to resonate with yours. Light it, breathe it in, and find your way back to yourself.
-  </p>
-</section>
-
-<!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-track">
-    <span class="ticker-item">Organic soy wax</span>
-    <span class="ticker-item">Pure essential oils</span>
-    <span class="ticker-item">Herb & crystal toppings</span>
-    <span class="ticker-item">Sign-specific blends</span>
-    <span class="ticker-item">Gift-ready packaging</span>
-    <span class="ticker-item">Handmade in NYC</span>
-    <span class="ticker-item">12 astrological houses</span>
-    <span class="ticker-item">Organic soy wax</span>
-    <span class="ticker-item">Pure essential oils</span>
-    <span class="ticker-item">Herb & crystal toppings</span>
-    <span class="ticker-item">Sign-specific blends</span>
-    <span class="ticker-item">Gift-ready packaging</span>
-    <span class="ticker-item">Handmade in NYC</span>
-    <span class="ticker-item">12 astrological houses</span>
-  </div>
-</div>
-
-<!-- ABOUT -->
-<section class="about-section">
-  <div class="about-logo-block reveal">
-    <img class="about-logo-img" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="Hidden Houses">
-    <p class="about-tagline">"Each sign rules a hidden house. We help you light it."</p>
-  </div>
-  <div class="about-text reveal reveal-d1">
-    <h2 class="about-title">Born from the stars,<br><em>poured by hand</em></h2>
-    <div id="pretext-about">
-      Hidden Houses began in an Astoria kitchen with one question: why does every zodiac candle smell the same? The twelve houses of astrology each carry distinct energy. The first house governs self. The fourth rules home. The eighth holds transformation. We spent months translating those archetypes into scent. The result is a candle that doesn't just smell good. It resonates.
-    </div>
-    <div class="about-specs">
-      <div class="spec"><div class="spec-l">Studio</div><div class="spec-v">Astoria, NY</div></div>
-      <div class="spec"><div class="spec-l">Batch size</div><div class="spec-v">Under 50 units</div></div>
-      <div class="spec"><div class="spec-l">Wax</div><div class="spec-v">100% soy, organic</div></div>
-      <div class="spec"><div class="spec-l">Burn time</div><div class="spec-v">40 to 50 hours</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- THE SIGNS -->
-<section class="signs-section" id="signs">
-  <div class="section-header reveal">
-    <p class="section-eye">The collection</p>
-    <h2 class="section-title">All <em>twelve houses</em></h2>
-    <p id="pretext-signs-sub">
-      Every candle is a doorway into a different house. Find yours and what it has been trying to tell you.
-    </p>
-  </div>
-
-  <div class="signs-grid reveal reveal-d1">
-    <div class="sign-card">
-      <div class="sign-glyph">♈</div>
-      <div class="sign-house">1st house · Self</div>
-      <div class="sign-name">Aries</div>
-      <div class="sign-desc">Cinnamon, black pepper & clove. The house of identity: bold, unfiltered, alive.</div>
-      <div class="sign-herbs">Red rose · Carnelian</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♉</div>
-      <div class="sign-house">2nd house · Value</div>
-      <div class="sign-name">Taurus</div>
-      <div class="sign-desc">Sandalwood, vanilla & oakmoss. The house of what you hold: pleasure, earth, permanence.</div>
-      <div class="sign-herbs">Lavender · Citrine</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♊</div>
-      <div class="sign-house">3rd house · Mind</div>
-      <div class="sign-name">Gemini</div>
-      <div class="sign-desc">Spearmint, lemon & neroli. The house of thought: curious, restless, always two things at once.</div>
-      <div class="sign-herbs">Chamomile · Moonstone</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♋</div>
-      <div class="sign-house">4th house · Home</div>
-      <div class="sign-name">Cancer</div>
-      <div class="sign-desc">Jasmine, white sage & amber. The house of roots: memory, shelter, the people you return to.</div>
-      <div class="sign-herbs">White sage · Selenite</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♌</div>
-      <div class="sign-house">5th house · Joy</div>
-      <div class="sign-name">Leo</div>
-      <div class="sign-desc">Sweet orange, copal & frankincense. The house of creation: radiant, generous, unapologetic.</div>
-      <div class="sign-herbs">Marigold · Tiger's eye</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♍</div>
-      <div class="sign-house">6th house · Service</div>
-      <div class="sign-name">Virgo</div>
-      <div class="sign-desc">Eucalyptus, rosemary & cedar. The house of ritual: precise, healing, devoted to the work.</div>
-      <div class="sign-herbs">Rosemary · Clear quartz</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♎</div>
-      <div class="sign-house">7th house · Union</div>
-      <div class="sign-name">Libra</div>
-      <div class="sign-desc">Rose, ylang-ylang & freesia. The house of the other: balance, beauty, the mirror we need.</div>
-      <div class="sign-herbs">Rose petals · Rose quartz</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♏</div>
-      <div class="sign-house">8th house · Shadow</div>
-      <div class="sign-name">Scorpio</div>
-      <div class="sign-desc">Patchouli, vetiver & myrrh resin. The house of depth: what is hidden, what transforms.</div>
-      <div class="sign-herbs">Obsidian · Myrrh</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♐</div>
-      <div class="sign-house">9th house · Vision</div>
-      <div class="sign-name">Sagittarius</div>
-      <div class="sign-desc">Benzoin, pine & cardamom. The house of meaning: philosophy, expansion, open sky.</div>
-      <div class="sign-herbs">Juniper · Lapis lazuli</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♑</div>
-      <div class="sign-house">10th house · Legacy</div>
-      <div class="sign-name">Capricorn</div>
-      <div class="sign-desc">Vetiver, olibanum & soft tobacco. The house of ambition: what you build, what you leave behind.</div>
-      <div class="sign-herbs">Onyx · Black pepper</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♒</div>
-      <div class="sign-house">11th house · Collective</div>
-      <div class="sign-name">Aquarius</div>
-      <div class="sign-desc">Violet, ozone & blue cardamom. The house of the future: vision, community, revolution.</div>
-      <div class="sign-herbs">Amethyst · Elderflower</div>
-      <div class="sign-price">$24</div>
-    </div>
-    <div class="sign-card">
-      <div class="sign-glyph">♓</div>
-      <div class="sign-house">12th house · Mystery</div>
-      <div class="sign-name">Pisces</div>
-      <div class="sign-desc">Sea lotus, water lily & aquatic musk. The house of the unseen: dreams, dissolution, return.</div>
-      <div class="sign-herbs">Aquamarine · Lotus flower</div>
-      <div class="sign-price">$24</div>
-    </div>
-  </div>
-</section>
-
-<!-- WORD FLOW -->
-<section class="flow-section reveal">
-  <img class="flow-watermark" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="" aria-hidden="true">
-  <p class="flow-label">What goes inside each house</p>
-  <div id="pretext-word-flow"></div>
-</section>
-
-<!-- CRAFT -->
-<section class="craft-section" id="craft">
-  <div class="craft-grid">
-    <div class="craft-visual reveal">
-      <img
-        class="craft-candle-photo"
-        src="Gemini_Generated_Image_rxkb2zrxkb2zrxkb.png"
-        alt="Close up of Pisces zodiac candle with herb and crystal toppings"
-        style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;">
-      <!-- REMOVED SVG placeholder -->
-      <svg style="display:none" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="100" cy="140" r="94" fill="none" stroke="rgba(196,164,90,0.1)" stroke-width="0.5"/>
-        <circle cx="100" cy="140" r="70" fill="none" stroke="rgba(196,164,90,0.08)" stroke-width="0.5"/>
-        <circle cx="100" cy="140" r="46" fill="none" stroke="rgba(196,164,90,0.06)" stroke-width="0.5"/>
-        <polygon points="100,52 170,196 30,196" fill="none" stroke="rgba(196,164,90,0.08)" stroke-width="0.5"/>
-        <rect x="72" y="130" width="56" height="90" rx="3" fill="rgba(61,53,96,0.8)" stroke="rgba(196,164,90,0.25)" stroke-width="0.5"/>
-        <rect x="68" y="122" width="64" height="12" rx="4" fill="rgba(42,36,66,0.9)" stroke="rgba(196,164,90,0.2)" stroke-width="0.5"/>
-        <circle cx="88" cy="131" r="3.5" fill="rgba(122,140,120,0.5)"/>
-        <circle cx="100" cy="128" r="2.5" fill="rgba(196,164,90,0.4)"/>
-        <circle cx="112" cy="132" r="3" fill="rgba(155,107,138,0.4)"/>
-        <ellipse cx="95" cy="135" rx="5" ry="1.8" fill="rgba(122,140,120,0.35)" transform="rotate(-15 95 135)"/>
-        <line x1="100" y1="121" x2="100" y2="108" stroke="rgba(200,191,232,0.3)" stroke-width="0.8"/>
-        <ellipse cx="100" cy="96" rx="7" ry="13" fill="rgba(196,164,90,0.25)"/>
-        <ellipse cx="100" cy="99" rx="3.5" ry="8" fill="rgba(212,180,110,0.4)"/>
-        <text x="118" y="88" font-size="8" fill="rgba(196,164,90,0.5)" font-family="serif">✦</text>
-        <text x="78" y="94" font-size="6" fill="rgba(196,164,90,0.35)" font-family="serif">✦</text>
-        <text x="112" y="76" font-size="5" fill="rgba(196,164,90,0.25)" font-family="serif">✦</text>
-        <text x="100" y="222" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-size="8" fill="rgba(139,132,168,0.5)" letter-spacing="3">♎ LIBRA</text>
-      </svg>
-      <div class="craft-badge">7 oz amber jar</div>
-    </div>
-    <div class="craft-info reveal reveal-d1">
-      <p class="section-eye" style="justify-content:flex-start;">How it's made</p>
-      <h2 class="craft-title">Every candle<br>is a <em>ritual</em></h2>
-      <div id="pretext-craft">
-        Organic soy wax is melted in a double boiler, blended with pure essential oils and poured by hand into amber glass jars. Herb toppings, dried botanicals, crystal chips and flowers, each selected for its astrological resonance, are placed by hand, one layer at a time. No shortcuts. No machines. Just the work.
-      </div>
-      <div class="craft-specs">
-        <div class="spec"><div class="spec-l">Vessel</div><div class="spec-v">Amber jar · 7 oz</div></div>
-        <div class="spec"><div class="spec-l">Burn time</div><div class="spec-v">40 to 50 hrs</div></div>
-        <div class="spec"><div class="spec-l">Wax</div><div class="spec-v">Organic soy</div></div>
-        <div class="spec"><div class="spec-l">Fragrance</div><div class="spec-v">Pure essential oils</div></div>
-      </div>
-      <a href="#signs" class="btn-main" style="align-self:flex-start;">Find my house</a>
-    </div>
-  </div>
-</section>
-
-<!-- REVIEWS -->
-<section class="reviews-section">
-  <div class="section-header reveal">
-    <p class="section-eye">From our community</p>
-    <h2 class="section-title">They <em>felt</em> it</h2>
-  </div>
-  <div class="reviews-grid">
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">"The Scorpio blend stopped me in my tracks. Patchouli and myrrh together feel like stepping into the 8th house, the room where things transform. I'm on my third jar."</p>
-      <div class="review-author">Ashley T. <span class="review-sign">♏ Scorpio · 8th house</span></div>
-    </div>
-    <div class="review-card reveal reveal-d1">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">"I bought it as a gift for a Libra and she cried when she smelled it. She said it smelled like balance. That's a 7th house candle doing exactly what it should."</p>
-      <div class="review-author">Rachel W. <span class="review-sign">♎ Libra · 7th house</span></div>
-    </div>
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">"I didn't expect a candle to feel astrologically accurate, but the Aries one does. It's pure first house energy: all fire and forward motion. My desk has never smelled better."</p>
-      <div class="review-author">Lauren K. <span class="review-sign">♈ Aries · 1st house</span></div>
-    </div>
-    <div class="review-card reveal reveal-d1">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">"Pisces is the 12th house, the house of mystery and dreams. This candle smells like exactly that. I burn it before bed and it genuinely changes the feeling of the room."</p>
-      <div class="review-author">Megan S. <span class="review-sign">♓ Pisces · 12th house</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section" id="order">
-  <svg class="cta-mandala" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <g transform="translate(350,350)" stroke="currentColor" stroke-width="0.5" fill="none">
-      <circle r="320"/><circle r="260"/><circle r="200"/><circle r="140"/><circle r="80"/>
-      <line x1="0" y1="-320" x2="0" y2="320"/>
-      <line x1="-320" y1="0" x2="320" y2="0"/>
-      <line x1="-226" y1="-226" x2="226" y2="226"/>
-      <line x1="226" y1="-226" x2="-226" y2="226"/>
-      <polygon points="0,-240 208,120 -208,120"/>
-      <polygon points="0,240 208,-120 -208,-120"/>
-    </g>
-  </svg>
-
-  <img class="cta-logo" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="Hidden Houses">
-
-  <p class="cta-eyebrow">Limited edition · Monthly batches</p>
-  <h2 class="cta-title">
-    Which house<br>is <em>yours?</em>
-  </h2>
-
-  <p id="pretext-cta">
-    Every batch is hand-poured in small quantities. When it sells out, the next one takes 30 days. The houses wait for no one.
-  </p>
-
-  <div class="cta-btns">
-    <a href="#signs" class="btn-cta">Shop all 12 houses</a>
-    <a href="#craft" class="btn-ghost">Learn more</a>
-  </div>
-  <p class="cta-note">Free shipping over $65 · Secure checkout · Ships in 3 business days</p>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <img class="footer-logo-img" src="Gemini_Generated_Image_8fvf4l8fvf4l8fvf.png" alt="Hidden Houses">
-  <div class="footer-copy">
-    © 2026 Hidden Houses Studio · Astoria, NY<br>
-    Every house tells a story. ✦
-  </div>
-</footer>
-
-<!-- PRETEXT CORE -->
-<script>
-const Pretext = (() => {
-  const cv = document.createElement('canvas');
-  const cx = cv.getContext('2d');
-
-  function setFont(s){
-    cx.font=`${s.style||'normal'} ${s.weight||'300'} ${s.size} ${s.family}`;
-  }
-  function measure(words,style){
-    setFont(style);
-    const sw=cx.measureText(' ').width;
-    return{words:words.map(w=>({w,pw:cx.measureText(w).width})),spaceW:sw};
-  }
-  function breakLines(m,maxW){
-    const lines=[];let line=[],x=0;
-    m.words.forEach(wm=>{
-      const need=wm.pw+(line.length?m.spaceW:0);
-      if(line.length&&x+need>maxW){lines.push(line);line=[wm];x=wm.pw;}
-      else{line.push(wm);x+=need;}
-    });
-    if(line.length)lines.push(line);
-    return lines;
-  }
-  function render(container,text,style,opts={}){
-    const words=text.trim().split(/\s+/);
-    const W=container.clientWidth||320;
-    const m=measure(words,style);
-    const lines=breakLines(m,W);
-    const fs=parseFloat(style.size);
-    const lh=parseFloat(style.lh||1.75);
-    container.style.position='relative';
-    container.innerHTML='';
-    let y=0;
-    lines.forEach(line=>{
-      let x=0;
-      line.forEach((wm,i)=>{
-        const span=document.createElement('span');
-        span.textContent=wm.w;
-        const isHL=opts.highlight&&opts.highlight.some(h=>wm.w.replace(/[^a-zA-Z]/g,'').toLowerCase()===h.toLowerCase());
-        Object.assign(span.style,{
-          position:'absolute',left:x+'px',top:y+'px',
-          fontSize:style.size,fontFamily:style.family,
-          fontWeight:style.weight||'300',
-          fontStyle:isHL?'italic':(style.style||'normal'),
-          lineHeight:style.lh||'1.75',
-          color:isHL?(opts.hlColor||'var(--gold-lt)'):(opts.color||'inherit'),
-          whiteSpace:'nowrap',opacity:'0',
-          transition:`opacity .5s ${(y/fs+i)*26}ms, color .3s, transform .35s`,
-          cursor:'default',userSelect:'none',
-        });
-        if(opts.hover!==false){
-          span.addEventListener('mouseenter',()=>{span.style.color='var(--gold)';span.style.transform='translateY(-2px)';});
-          span.addEventListener('mouseleave',()=>{span.style.color=isHL?(opts.hlColor||'var(--gold-lt)'):(opts.color||'inherit');span.style.transform='';});
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wealthsimple — Your money, working smarter.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['IBM Plex Sans', 'sans-serif'] },
+          colors: {
+            navy:  { DEFAULT: '#0D1117', 800: '#161B22', 700: '#21262D' },
+            green: { DEFAULT: '#00C853', hover: '#00B348', muted: '#00C85320' },
+            gold:  { DEFAULT: '#CA8A04', light: '#FEF3C7', muted: '#CA8A0420' },
+          },
         }
-        container.appendChild(span);
-        requestAnimationFrame(()=>setTimeout(()=>span.style.opacity='1',(y/fs+i)*30+(opts.delay||0)));
-        x+=wm.pw+(i<line.length-1?m.spaceW:0);
-      });
-      y+=fs*lh;
-    });
-    container.style.height=(y+fs*0.3)+'px';
-  }
-  return{render};
-})();
-
-function buildFlow(){
-  const el=document.getElementById('pretext-word-flow');
-  if(!el||el.clientWidth===0)return;
-  const text='Soy wax. Organic herbs. Pure essential oils. Real crystals. Intention. All poured by hand. For your house.';
-  const hl=['herbs','essential','oils','crystals','Intention','hand','house'];
-  Pretext.render(el,text,{
-    size:window.innerWidth<520?'20px':'28px',
-    family:"'Cormorant Garamond', Georgia, serif",
-    weight:'400',style:'normal',lh:'1.5',
-  },{
-    color:'rgba(200,191,232,0.45)',
-    highlight:hl,hlColor:'var(--gold-lt)',
-    delay:0,
-  });
-}
-
-const io=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(!e.isIntersecting)return;
-    e.target.classList.add('in');
-    if(e.target.contains(document.getElementById('pretext-word-flow'))){
-      document.fonts.ready.then(buildFlow);
-    }
-  });
-},{threshold:0.12});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-
-let rt;
-window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(buildFlow,220);});
-
-const glyphs=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
-let gi=11;
-const glyph=document.getElementById('hero-glyph');
-setInterval(()=>{
-  gi=(gi+1)%12;
-  glyph.style.transition='opacity .6s';glyph.style.opacity='0';
-  setTimeout(()=>{glyph.textContent=glyphs[gi];glyph.style.opacity='1';},630);
-},3500);
-
-
-
-// ── THREE.JS 3D ORBIT ─────────────────────────────────────
-(function initStar3D(){
-  var canvas = document.getElementById('starCanvas');
-  if(!canvas) return;
-
-  // Load Three.js from CDN then init
-  var s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-  s.onload = function(){ setupScene(); };
-  document.head.appendChild(s);
-
-  function setupScene(){
-    var panel = canvas.parentElement;
-
-    var W = panel.offsetWidth  || 600;
-    var H = panel.offsetHeight || 800;
-
-    // Renderer — alpha:true so background is transparent
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(W, H);
-    renderer.setClearColor(0x000000, 0);
-
-    // Scene + Camera
-    var scene  = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 100);
-    camera.position.set(0, 0.6, 5);
-    camera.lookAt(0, 0, 0);
-
-    // ── Orbit parameters ──────────────────────────────────
-    var RX        = 1.35;   // orbit semi-axis X (horizontal spread)
-    var RY        = 0.55;   // orbit semi-axis Y (depth — more 3D contrast)
-    var TILT      = 0.88;   // orbit plane tilt in radians (~50°)
-    var SPEED     = 0.55;   // radians per second (medium — fluid)
-
-    // ── Faint orbit ring (thin torus) ──────────────────────
-    var ringGeo = new THREE.TorusGeometry(RX, 0.004, 8, 120);
-    // Apply tilt to ring
-    ringGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(TILT));
-    // Squish Y to match RY
-    ringGeo.applyMatrix4(new THREE.Matrix4().makeScale(1, RY / RX, 1));
-    var ringMat = new THREE.MeshBasicMaterial({
-      color: 0xc4a45a, transparent: true, opacity: 0.09
-    });
-    var ring = new THREE.Mesh(ringGeo, ringMat);
-    scene.add(ring);
-
-    // ── Star head (glowing sprite) ─────────────────────────
-    var starTex = (function(){
-      var c  = document.createElement('canvas');
-      c.width = c.height = 128;
-      var cx = c.getContext('2d');
-      var g  = cx.createRadialGradient(64,64,0, 64,64,64);
-      g.addColorStop(0,    'rgba(255,235,180,1)');
-      g.addColorStop(0.12, 'rgba(220,185,110,0.9)');
-      g.addColorStop(0.35, 'rgba(196,164,90,0.45)');
-      g.addColorStop(0.7,  'rgba(196,164,90,0.12)');
-      g.addColorStop(1,    'rgba(196,164,90,0)');
-      cx.fillStyle = g;
-      cx.fillRect(0,0,128,128);
-      // sparkle arms
-      cx.strokeStyle = 'rgba(255,240,190,0.75)';
-      cx.lineWidth = 1.5;
-      cx.beginPath(); cx.moveTo(64,18); cx.lineTo(64,110); cx.stroke();
-      cx.beginPath(); cx.moveTo(18,64); cx.lineTo(110,64); cx.stroke();
-      cx.strokeStyle = 'rgba(255,240,190,0.35)';
-      cx.lineWidth = 1;
-      cx.beginPath(); cx.moveTo(30,30); cx.lineTo(98,98); cx.stroke();
-      cx.beginPath(); cx.moveTo(98,30); cx.lineTo(30,98); cx.stroke();
-      return new THREE.CanvasTexture(c);
-    })();
-
-    var starMat = new THREE.SpriteMaterial({
-      map: starTex, transparent: true, opacity: 0, depthTest: false, blending: THREE.AdditiveBlending
-    });
-    var star = new THREE.Sprite(starMat);
-    star.scale.set(0.32, 0.32, 1);
-    scene.add(star);
-
-    // ── Tail: a series of sprites fading out behind the star ──
-    var TAIL_COUNT = 30;
-    var tailSprites = [];
-    var tailMat = new THREE.SpriteMaterial({
-      map: starTex, transparent: true, opacity: 0, depthTest: false, blending: THREE.AdditiveBlending
-    });
-    for(var i = 0; i < TAIL_COUNT; i++){
-      var sp = new THREE.Sprite(tailMat.clone());
-      sp.scale.set(0, 0, 1);
-      scene.add(sp);
-      tailSprites.push(sp);
-    }
-
-    // ── Position on inclined ellipse ───────────────────────
-    function getPos(a){
-      // parametric ellipse in XZ plane, then tilt around X axis
-      var x  =  RX * Math.cos(a);
-      var z0 =  RY * Math.sin(a);  // "depth" before tilt
-      var y  =  z0 * Math.sin(TILT);
-      var z  = -z0 * Math.cos(TILT);
-      return new THREE.Vector3(x, y, z);
-    }
-
-    // ── Depth-based scale & opacity ────────────────────────
-    // z range: [-RY, +RY] mapped to [back, front]
-    function depthFactor(pos){
-      // pos.z ranges roughly from -(RY*cos TILT) to +(RY*cos TILT)
-      var range = RY * Math.cos(TILT);
-      return (pos.z + range) / (2 * range); // 0 = behind, 1 = in front
-    }
-
-    // Tail history buffer
-    var history = [];
-    var clock = new THREE.Clock();
-    var angle = 0;
-    var started = false;
-
-    function animate(){
-      requestAnimationFrame(animate);
-      var dt = clock.getDelta();
-      angle -= SPEED * dt;  // clockwise
-
-      var pos = getPos(angle);
-      var df  = depthFactor(pos);
-
-      // Scale and opacity vary with depth — bigger & brighter in front
-      var scaleS  = 0.12 + df * 0.38;   // 0.12 (back) → 0.50 (front)
-      var opacS   = 0.05 + df * 0.95;   // 0.05 (barely visible) → 1.0 (full)
-
-      star.position.copy(pos);
-      star.scale.set(scaleS, scaleS, 1);
-      star.material.opacity = started ? opacS : 0;
-
-      // Push to tail history
-      history.unshift({ pos: pos.clone(), df: df });
-      if(history.length > TAIL_COUNT) history.pop();
-
-      // Update tail sprites
-      for(var i = 0; i < TAIL_COUNT; i++){
-        var sp = tailSprites[i];
-        if(!history[i] || !started){ sp.material.opacity = 0; continue; }
-        var h   = history[i];
-        var t   = 1 - (i / TAIL_COUNT);          // 1 at head → 0 at end
-        var fade = t * t * 0.72;                  // quadratic fade
-        var sc   = (0.08 + h.df * 0.14) * t;
-        sp.position.copy(h.pos);
-        sp.scale.set(sc, sc, 1);
-        sp.material.opacity = fade * (0.25 + h.df * 0.75);
       }
+    }
+  </script>
+  <style>
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-      renderer.render(scene, camera);
+    .glass-nav {
+      background: rgba(13, 17, 23, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .glass-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hero-bg {
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 40%, rgba(0,200,83,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 20% 70%, rgba(14,165,233,0.05) 0%, transparent 70%),
+        #0D1117;
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #00C853 0%, #69F0AE 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .chart-line { fill: none; stroke: #00C853; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .chart-fill { fill: url(#chartGradient); }
+
+    .tier-gold {
+      border: 1.5px solid #CA8A04;
+      box-shadow: 0 0 28px rgba(202,138,4,0.13), 0 4px 24px rgba(0,0,0,0.10);
     }
 
-    // Resize handler
-    function onResize(){
-      var p = canvas.parentElement;
-      var w = p.offsetWidth  || 600;
-      var h = p.offsetHeight || 800;
-      renderer.setSize(w, h);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    window.addEventListener('resize', onResize);
+    .animate-fade-up  { animation: fadeUp 0.55s ease-out both; }
+    .delay-100 { animation-delay: 0.10s; }
+    .delay-200 { animation-delay: 0.20s; }
+    .delay-300 { animation-delay: 0.30s; }
+    .delay-400 { animation-delay: 0.40s; }
 
-    // Fade in and start
-    function start(){
-      started = true;
-      canvas.style.opacity = '1';
+    .btn-primary {
+      background: #00C853;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
     }
+    .btn-primary:hover {
+      background: #00B348;
+      box-shadow: 0 0 24px rgba(0,200,83,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      border: 1.5px solid rgba(255,255,255,0.18);
+      color: #F8FAFC;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(255,255,255,0.40);
+      background: rgba(255,255,255,0.05);
+      transform: translateY(-1px);
+    }
+    .feature-card { transition: box-shadow 0.25s, transform 0.25s; }
+    .feature-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.10); transform: translateY(-3px); }
 
-    animate();
-    setTimeout(start, 1200);
-  }
-})();
-</script>
+    .nav-link { position: relative; transition: color 0.2s; }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; right: 100%;
+      height: 1.5px; background: #00C853; transition: right 0.25s;
+    }
+    .nav-link:hover::after { right: 0; }
+
+    .tier-card { transition: box-shadow 0.25s, transform 0.25s; }
+    .tier-card:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.12); transform: translateY(-4px); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0D1117; }
+    ::-webkit-scrollbar-thumb { background: #21262D; border-radius: 3px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body class="font-sans bg-[#0D1117] text-slate-50 overflow-x-hidden">
+
+  <!-- ══════════════════════════════════════════
+       NAVIGATION
+  ══════════════════════════════════════════ -->
+  <header class="glass-nav fixed top-0 left-0 right-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2.5 cursor-pointer" aria-label="Wealthsimple Home">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <rect width="28" height="28" rx="7" fill="#00C853"/>
+          <path d="M6 10l4 8 4-6 4 6 4-8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="text-white font-semibold text-[17px] tracking-tight">wealthsimple</span>
+      </a>
+
+      <!-- Desktop links -->
+      <ul class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300" role="list">
+        <li><a href="#invest"   class="nav-link hover:text-white cursor-pointer">Invest</a></li>
+        <li><a href="#save"     class="nav-link hover:text-white cursor-pointer">Save</a></li>
+        <li><a href="#tax"      class="nav-link hover:text-white cursor-pointer">Tax</a></li>
+        <li><a href="#advisors" class="nav-link hover:text-white cursor-pointer">Advisors</a></li>
+        <li>
+          <a href="#premium" class="nav-link hover:text-white cursor-pointer flex items-center gap-1">
+            Premium
+            <svg class="w-3.5 h-3.5 text-yellow-500" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 1L10.3 5.7L15.5 6.5L11.8 10.1L12.6 15.3L8 12.9L3.4 15.3L4.2 10.1L0.5 6.5L5.7 5.7L8 1Z"/>
+            </svg>
+          </a>
+        </li>
+      </ul>
+
+      <!-- CTA -->
+      <div class="hidden md:flex items-center gap-3">
+        <a href="#" class="text-sm font-medium text-slate-300 hover:text-white transition-colors cursor-pointer">Log in</a>
+        <a href="#" class="btn-primary text-sm font-semibold text-[#0D1117] px-4 py-2 rounded-lg cursor-pointer">Get started</a>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button class="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer" aria-label="Open menu">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════ -->
+  <section class="hero-bg min-h-screen pt-16 flex items-center relative overflow-hidden">
+    <!-- Grid overlay -->
+    <div class="absolute inset-0 opacity-[0.025]"
+         style="background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:64px 64px;"
+         aria-hidden="true"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 w-full">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+        <!-- Copy -->
+        <div class="animate-fade-up">
+          <div class="inline-flex items-center gap-2 bg-[#00C85318] border border-[#00C85330] rounded-full px-3 py-1 mb-6">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#00C853] animate-pulse" aria-hidden="true"></span>
+            <span class="text-[#00C853] text-xs font-medium">Trusted by 3M+ Canadians</span>
+          </div>
+
+          <h1 class="text-[52px] sm:text-[64px] lg:text-[72px] font-bold leading-[1.05] tracking-tight text-white mb-6">
+            Your money,<br/>
+            <span class="text-gradient">working smarter.</span>
+          </h1>
+
+          <p class="text-lg text-slate-300 leading-relaxed max-w-lg mb-8">
+            Banking, investing, and taxes — all in one place. No hidden fees, no nonsense. Just a better way to grow your wealth.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3 mb-10">
+            <a href="#" class="btn-primary text-[#0D1117] font-semibold text-base px-6 py-3.5 rounded-xl cursor-pointer text-center">
+              Get started free
+            </a>
+            <a href="#" class="btn-secondary font-medium text-base px-6 py-3.5 rounded-xl cursor-pointer text-center flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M10 8l6 4-6 4V8z"/>
+              </svg>
+              See how it works
+            </a>
+          </div>
+
+          <div class="flex items-center gap-3 text-sm text-slate-400">
+            <div class="flex -space-x-2" aria-hidden="true">
+              <div class="w-7 h-7 rounded-full bg-[#00C85330] border-2 border-[#0D1117] flex items-center justify-center text-[10px] font-bold text-[#00C853]">S</div>
+              <div class="w-7 h-7 rounded-full bg-sky-500/25 border-2 border-[#0D1117] flex items-center justify-center text-[10px] font-bold text-sky-400">M</div>
+              <div class="w-7 h-7 rounded-full bg-purple-500/25 border-2 border-[#0D1117] flex items-center justify-center text-[10px] font-bold text-purple-400">A</div>
+            </div>
+            <span>Join <strong class="text-white font-semibold">3,000,000+</strong> Canadians already investing smarter</span>
+          </div>
+        </div>
+
+        <!-- Dashboard mockup -->
+        <div class="animate-fade-up delay-200 relative">
+          <div class="glass-card rounded-2xl p-5 max-w-md mx-auto lg:ml-auto" style="box-shadow:0 8px 32px rgba(0,0,0,0.28);">
+
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <p class="text-slate-400 text-xs font-medium uppercase tracking-wider">Total portfolio</p>
+                <p class="text-white text-3xl font-bold mt-0.5">$84,231<span class="text-slate-400 text-lg font-normal">.62</span></p>
+              </div>
+              <div class="flex items-center gap-1.5 bg-[#00C85318] border border-[#00C85330] rounded-lg px-2.5 py-1.5">
+                <svg class="w-3.5 h-3.5 text-[#00C853]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <path d="M18 15l-6-6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-[#00C853] text-sm font-semibold">+12.4%</span>
+              </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="rounded-xl overflow-hidden mb-4" style="height:120px;">
+              <svg viewBox="0 0 380 120" width="100%" height="100%" preserveAspectRatio="none" aria-label="Portfolio performance chart showing upward trend">
+                <defs>
+                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"   stop-color="#00C853" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="#00C853" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path class="chart-fill" d="M0 110 L0 88 C30 82,50 76,80 68 C110 60,130 72,160 58 C185 46,205 52,230 42 C255 30,275 36,310 22 C335 12,355 16,380 8 L380 110 Z"/>
+                <path class="chart-line"  d="M0 88 C30 82,50 76,80 68 C110 60,130 72,160 58 C185 46,205 52,230 42 C255 30,275 36,310 22 C335 12,355 16,380 8"/>
+                <circle cx="310" cy="22" r="4" fill="#00C853" aria-hidden="true"/>
+                <circle cx="310" cy="22" r="8" fill="#00C853" fill-opacity="0.2" aria-hidden="true"/>
+              </svg>
+            </div>
+
+            <!-- Time tabs -->
+            <div class="flex gap-1 mb-4" role="tablist" aria-label="Chart time range">
+              <button role="tab" aria-selected="false" class="px-2.5 py-1 text-xs font-medium text-slate-400 hover:text-white rounded-md hover:bg-white/5 transition-colors cursor-pointer">1M</button>
+              <button role="tab" aria-selected="false" class="px-2.5 py-1 text-xs font-medium text-slate-400 hover:text-white rounded-md hover:bg-white/5 transition-colors cursor-pointer">3M</button>
+              <button role="tab" aria-selected="false" class="px-2.5 py-1 text-xs font-medium text-slate-400 hover:text-white rounded-md hover:bg-white/5 transition-colors cursor-pointer">6M</button>
+              <button role="tab" aria-selected="true"  class="px-2.5 py-1 text-xs font-medium text-white bg-white/10 rounded-md cursor-pointer">1Y</button>
+              <button role="tab" aria-selected="false" class="px-2.5 py-1 text-xs font-medium text-slate-400 hover:text-white rounded-md hover:bg-white/5 transition-colors cursor-pointer">All</button>
+            </div>
+
+            <!-- Holdings -->
+            <div class="space-y-2.5" role="list" aria-label="Portfolio holdings">
+              <div class="flex items-center justify-between" role="listitem">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-sky-500/20 flex items-center justify-center text-[10px] font-bold text-sky-400" aria-hidden="true">A</div>
+                  <div><p class="text-white text-xs font-medium">AAPL</p><p class="text-slate-400 text-[10px]">12 shares</p></div>
+                </div>
+                <div class="text-right"><p class="text-white text-xs font-medium">$2,418.00</p><p class="text-[#00C853] text-[10px] font-medium">+3.2%</p></div>
+              </div>
+              <div class="flex items-center justify-between" role="listitem">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center text-[10px] font-bold text-purple-400" aria-hidden="true">G</div>
+                  <div><p class="text-white text-xs font-medium">GOOGL</p><p class="text-slate-400 text-[10px]">8 shares</p></div>
+                </div>
+                <div class="text-right"><p class="text-white text-xs font-medium">$1,391.20</p><p class="text-[#00C853] text-[10px] font-medium">+1.8%</p></div>
+              </div>
+              <div class="flex items-center justify-between" role="listitem">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center text-[10px] font-bold text-amber-400" aria-hidden="true">E</div>
+                  <div><p class="text-white text-xs font-medium">ETF Managed</p><p class="text-slate-400 text-[10px]">Balanced</p></div>
+                </div>
+                <div class="text-right"><p class="text-white text-xs font-medium">$41,200.00</p><p class="text-[#00C853] text-[10px] font-medium">+8.6%</p></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating badge -->
+          <div class="absolute -bottom-3 -left-3 glass-card rounded-xl px-3 py-2 hidden lg:flex items-center gap-2 animate-fade-up delay-400" style="box-shadow:0 8px 32px rgba(0,0,0,0.28);">
+            <div class="w-7 h-7 rounded-full bg-yellow-500/20 flex items-center justify-center" aria-hidden="true">
+              <svg class="w-3.5 h-3.5 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-white text-xs font-semibold">$100B+ AUM</p>
+              <p class="text-slate-400 text-[10px]">Assets under management</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       TRUST BAR
+  ══════════════════════════════════════════ -->
+  <section class="bg-[#161B22] border-y border-white/5 py-8" aria-label="As featured in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-center text-slate-500 text-xs font-medium uppercase tracking-widest mb-6">As featured in</p>
+      <div class="flex flex-wrap items-center justify-center gap-10 opacity-40">
+        <span class="text-slate-300 font-semibold text-sm tracking-tight">The Globe &amp; Mail</span>
+        <span class="text-slate-300 font-semibold text-sm tracking-tight">BNN Bloomberg</span>
+        <span class="text-slate-300 font-semibold text-sm tracking-tight">Financial Post</span>
+        <span class="text-slate-300 font-semibold text-sm tracking-tight">CBC News</span>
+        <span class="text-slate-300 font-semibold text-sm tracking-tight">MoneySense</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       FEATURES — 3 PRODUCT CARDS
+  ══════════════════════════════════════════ -->
+  <section id="invest" class="bg-slate-50 py-24 lg:py-32" aria-labelledby="features-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-16">
+        <p class="text-[#00C853] text-sm font-semibold uppercase tracking-widest mb-3">Everything you need</p>
+        <h2 id="features-heading" class="text-slate-900 text-4xl lg:text-5xl font-bold tracking-tight mb-4">One platform. Every financial goal.</h2>
+        <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">From your first dollar to your retirement fund — every corner of your financial life, covered.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+
+        <!-- Invest -->
+        <article class="feature-card bg-white rounded-2xl p-7 cursor-pointer" style="box-shadow:0 4px 24px rgba(0,0,0,0.06);" aria-labelledby="invest-card">
+          <div class="w-12 h-12 rounded-xl bg-[#00C85315] flex items-center justify-center mb-5" aria-hidden="true">
+            <svg class="w-6 h-6 text-[#00C853]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 17l4-8 4 4 4-6 4 2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 21h18" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 id="invest-card" class="text-slate-900 text-xl font-bold mb-2">Smart Investing</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-5">Self-directed trading and managed portfolios. Stocks, ETFs, and crypto — all with zero commission.</p>
+          <ul class="space-y-2 text-sm text-slate-600" role="list">
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-[#00C853] flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Zero-commission trading
+            </li>
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-[#00C853] flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Expert-managed ETF portfolios
+            </li>
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-[#00C853] flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              RRSP, TFSA &amp; FHSA accounts
+            </li>
+          </ul>
+          <a href="#" class="mt-6 inline-flex items-center gap-1.5 text-[#00C853] font-semibold text-sm hover:gap-2.5 transition-all cursor-pointer" aria-label="Learn more about investing">
+            Start investing
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+        <!-- Save -->
+        <article id="save" class="feature-card bg-white rounded-2xl p-7 cursor-pointer relative overflow-hidden" style="box-shadow:0 4px 24px rgba(0,0,0,0.06);" aria-labelledby="save-card">
+          <div class="absolute top-4 right-4 bg-[#00C85315] border border-[#00C85330] rounded-full px-2 py-0.5 text-[10px] font-semibold text-[#00C853] uppercase tracking-wide">Top Rate</div>
+          <div class="w-12 h-12 rounded-xl bg-sky-100 flex items-center justify-center mb-5" aria-hidden="true">
+            <svg class="w-6 h-6 text-sky-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+              <path d="M8 9V7a4 4 0 118 0v2"/>
+            </svg>
+          </div>
+          <h3 id="save-card" class="text-slate-900 text-xl font-bold mb-2">High-Interest Savings</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-5">Earn <strong class="text-slate-800">up to 2.25% interest</strong> on every dollar. No minimum balance. No monthly fees.</p>
+          <ul class="space-y-2 text-sm text-slate-600" role="list">
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-sky-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              2.25% everyday savings rate
+            </li>
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-sky-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Free instant transfers
+            </li>
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-sky-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              CDIC deposit protection
+            </li>
+          </ul>
+          <a href="#" class="mt-6 inline-flex items-center gap-1.5 text-sky-500 font-semibold text-sm hover:gap-2.5 transition-all cursor-pointer" aria-label="Open a savings account">
+            Open an account
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+        <!-- Tax -->
+        <article id="tax" class="feature-card bg-white rounded-2xl p-7 cursor-pointer" style="box-shadow:0 4px 24px rgba(0,0,0,0.06);" aria-labelledby="tax-card">
+          <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center mb-5" aria-hidden="true">
+            <svg class="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+            </svg>
+          </div>
+          <h3 id="tax-card" class="text-slate-900 text-xl font-bold mb-2">Tax Filing</h3>
+          <p class="text-slate-600 text-sm leading-relaxed mb-5">File your Canadian taxes in minutes. AI-guided, CRA-certified, and always maximizing your refund.</p>
+          <ul class="space-y-2 text-sm text-slate-600" role="list">
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-purple-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Auto-fill from CRA data
+            </li>
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-purple-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Smart deduction finder
+            </li>
+            <li class="flex items-center gap-2" role="listitem">
+              <svg class="w-4 h-4 text-purple-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Free for simple returns
+            </li>
+          </ul>
+          <a href="#" class="mt-6 inline-flex items-center gap-1.5 text-purple-600 font-semibold text-sm hover:gap-2.5 transition-all cursor-pointer" aria-label="Start your tax return">
+            Start my return
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       STATS BAR
+  ══════════════════════════════════════════ -->
+  <section class="bg-[#0D1117] py-14 border-y border-white/5" aria-label="Wealthsimple by the numbers">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+        <div class="animate-fade-up">
+          <p class="text-4xl lg:text-5xl font-bold text-white mb-1">3M<span class="text-[#00C853]">+</span></p>
+          <p class="text-slate-400 text-sm font-medium">Canadians trust us</p>
+        </div>
+        <div class="animate-fade-up delay-100">
+          <p class="text-4xl lg:text-5xl font-bold text-white mb-1">$100B<span class="text-[#00C853]">+</span></p>
+          <p class="text-slate-400 text-sm font-medium">Assets under management</p>
+        </div>
+        <div class="animate-fade-up delay-200">
+          <p class="text-4xl lg:text-5xl font-bold text-white mb-1">$0</p>
+          <p class="text-slate-400 text-sm font-medium">Hidden fees, ever</p>
+        </div>
+        <div class="animate-fade-up delay-300">
+          <p class="text-4xl lg:text-5xl font-bold text-white mb-1">4.8<span class="text-[#00C853]">★</span></p>
+          <p class="text-slate-400 text-sm font-medium">App store rating</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       ADVISOR SECTION
+  ══════════════════════════════════════════ -->
+  <section id="advisors" class="bg-slate-50 py-24 lg:py-32" aria-labelledby="advisors-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+        <!-- Advisor card mockup -->
+        <div class="order-2 lg:order-1">
+          <div class="bg-white rounded-2xl p-6 max-w-sm" style="box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#00C853]/30 to-sky-400/30 flex items-center justify-center text-base font-bold text-[#00C853]" aria-hidden="true">JD</div>
+              <div>
+                <p class="text-slate-900 font-semibold text-sm">Jamie Dumont, CFP</p>
+                <p class="text-slate-500 text-xs">Certified Financial Planner</p>
+              </div>
+              <div class="ml-auto w-2 h-2 rounded-full bg-[#00C853]" aria-label="Advisor is online"></div>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4 mb-4">
+              <p class="text-slate-700 text-sm leading-relaxed">"Based on your goals, I recommend maxing your TFSA first, then a balanced ETF portfolio for your RRSP — you could save an additional $4,200 in taxes this year."</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="flex-1 bg-[#00C853] text-[#0D1117] text-xs font-semibold py-2.5 rounded-lg hover:bg-[#00B348] transition-colors cursor-pointer">Book a call</button>
+              <button class="flex-1 border border-slate-200 text-slate-600 text-xs font-medium py-2.5 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">Send message</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Copy -->
+        <div class="order-1 lg:order-2">
+          <p class="text-[#00C853] text-sm font-semibold uppercase tracking-widest mb-3">Human advisors</p>
+          <h2 id="advisors-heading" class="text-slate-900 text-4xl lg:text-5xl font-bold tracking-tight mb-5">Expert advice,<br/>on your schedule.</h2>
+          <p class="text-slate-600 text-lg leading-relaxed mb-6">Connect with a licensed Canadian financial planner. Whether you're planning retirement, buying a home, or just getting started — a human is ready to help.</p>
+          <ul class="space-y-3 text-slate-600 mb-8" role="list">
+            <li class="flex items-start gap-3" role="listitem">
+              <div class="w-5 h-5 rounded-full bg-[#00C85318] flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
+                <svg class="w-3 h-3 text-[#00C853]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Certified CFP &amp; CIM advisors across Canada
+            </li>
+            <li class="flex items-start gap-3" role="listitem">
+              <div class="w-5 h-5 rounded-full bg-[#00C85318] flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
+                <svg class="w-3 h-3 text-[#00C853]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Personalized financial plans, not cookie-cutter advice
+            </li>
+            <li class="flex items-start gap-3" role="listitem">
+              <div class="w-5 h-5 rounded-full bg-[#00C85318] flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
+                <svg class="w-3 h-3 text-[#00C853]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              Included free with Generation membership
+            </li>
+          </ul>
+          <a href="#" class="btn-primary inline-flex items-center gap-2 text-[#0D1117] font-semibold px-5 py-3 rounded-xl cursor-pointer">
+            Meet your advisor
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       TESTIMONIALS
+  ══════════════════════════════════════════ -->
+  <section class="bg-[#0D1117] py-24 lg:py-32" aria-labelledby="testimonials-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-14">
+        <p class="text-[#00C853] text-sm font-semibold uppercase tracking-widest mb-3">What Canadians say</p>
+        <h2 id="testimonials-heading" class="text-white text-4xl lg:text-5xl font-bold tracking-tight">Real people. Real results.</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <blockquote class="glass-card rounded-2xl p-6">
+          <div class="flex gap-0.5 mb-4" aria-label="5 out of 5 stars">
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-5">"I switched from my big bank and couldn't believe how much I was paying in fees. Wealthsimple saved me over $800 last year, and my portfolio has never looked better."</p>
+          <footer class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-[#00C853]/20 flex items-center justify-center text-xs font-bold text-[#00C853]" aria-hidden="true">SK</div>
+            <div><p class="text-white text-sm font-semibold">Sarah K.</p><p class="text-slate-500 text-xs">Toronto, ON</p></div>
+          </footer>
+        </blockquote>
+
+        <blockquote class="glass-card rounded-2xl p-6 border border-[#00C853]/15">
+          <div class="flex gap-0.5 mb-4" aria-label="5 out of 5 stars">
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-5">"Tax season used to stress me out. With Wealthsimple Tax it took 20 minutes. They found two deductions I'd been missing for years. Got $1,400 back."</p>
+          <footer class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-sky-500/20 flex items-center justify-center text-xs font-bold text-sky-400" aria-hidden="true">MR</div>
+            <div><p class="text-white text-sm font-semibold">Marcus R.</p><p class="text-slate-500 text-xs">Vancouver, BC</p></div>
+          </footer>
+        </blockquote>
+
+        <blockquote class="glass-card rounded-2xl p-6">
+          <div class="flex gap-0.5 mb-4" aria-label="5 out of 5 stars">
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed mb-5">"My advisor helped me create a proper retirement plan. I'm 34 and finally feel like I know where I'm going financially. Worth every penny of the Generation plan."</p>
+          <footer class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-purple-500/20 flex items-center justify-center text-xs font-bold text-purple-400" aria-hidden="true">AL</div>
+            <div><p class="text-white text-sm font-semibold">Aisha L.</p><p class="text-slate-500 text-xs">Calgary, AB</p></div>
+          </footer>
+        </blockquote>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       MEMBERSHIP TIERS
+  ══════════════════════════════════════════ -->
+  <section id="premium" class="bg-slate-50 py-24 lg:py-32" aria-labelledby="pricing-heading">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-14">
+        <p class="text-[#00C853] text-sm font-semibold uppercase tracking-widest mb-3">Membership</p>
+        <h2 id="pricing-heading" class="text-slate-900 text-4xl lg:text-5xl font-bold tracking-tight mb-4">The more you grow, the better it gets.</h2>
+        <p class="text-slate-600 text-lg">Every level unlocks more power over your financial future.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
+
+        <!-- Basic -->
+        <article class="tier-card bg-white rounded-2xl p-7 cursor-pointer" style="box-shadow:0 4px 24px rgba(0,0,0,0.06);" aria-labelledby="basic-tier">
+          <p id="basic-tier" class="text-slate-900 text-lg font-bold mb-1">Basic</p>
+          <p class="text-slate-400 text-sm mb-5">Free forever</p>
+          <p class="text-4xl font-bold text-slate-900 mb-6">$0<span class="text-slate-400 text-lg font-normal">/mo</span></p>
+          <ul class="space-y-3 text-sm text-slate-600 mb-8" role="list">
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Zero-commission trades</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Savings account (2.00%)</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Free tax filing</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>RRSP, TFSA &amp; FHSA</li>
+          </ul>
+          <a href="#" class="block text-center border border-slate-200 text-slate-700 font-semibold text-sm py-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">Get started free</a>
+        </article>
+
+        <!-- Premium — highlighted -->
+        <article class="tier-card tier-gold bg-white rounded-2xl p-7 cursor-pointer relative" aria-labelledby="premium-tier">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <span class="bg-yellow-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow">Most popular</span>
+          </div>
+          <p id="premium-tier" class="text-slate-900 text-lg font-bold mb-1 flex items-center gap-2">
+            Premium
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/>
+            </svg>
+          </p>
+          <p class="text-slate-400 text-sm mb-5">For serious savers</p>
+          <p class="text-4xl font-bold text-slate-900 mb-6">$10<span class="text-slate-400 text-lg font-normal">/mo</span></p>
+          <ul class="space-y-3 text-sm text-slate-600 mb-8" role="list">
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Basic</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Higher savings rate (2.25%)</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Instant deposits up to $50K</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority support</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Lower FX rates (1.5%)</li>
+          </ul>
+          <a href="#" class="btn-primary block text-center text-[#0D1117] font-semibold text-sm py-3 rounded-xl cursor-pointer">Start Premium</a>
+        </article>
+
+        <!-- Generation -->
+        <article class="tier-card bg-[#0D1117] rounded-2xl p-7 cursor-pointer" style="box-shadow:0 4px 24px rgba(0,0,0,0.18);" aria-labelledby="generation-tier">
+          <p id="generation-tier" class="text-white text-lg font-bold mb-1">Generation</p>
+          <p class="text-slate-400 text-sm mb-5">For wealth builders</p>
+          <p class="text-4xl font-bold text-white mb-6">$50<span class="text-slate-400 text-lg font-normal">/mo</span></p>
+          <ul class="space-y-3 text-sm text-slate-300 mb-8" role="list">
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Premium</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Dedicated financial advisor</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Estate &amp; tax planning</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Lowest FX rates (0.5%)</li>
+            <li class="flex items-start gap-2.5" role="listitem"><svg class="w-4 h-4 text-[#00C853] flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>Concierge &amp; 24/7 support</li>
+          </ul>
+          <a href="#" class="block text-center border border-white/15 text-white font-semibold text-sm py-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer">Explore Generation</a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       FINAL CTA BANNER
+  ══════════════════════════════════════════ -->
+  <section class="hero-bg py-24 lg:py-32 relative overflow-hidden" aria-labelledby="cta-heading">
+    <div class="absolute inset-0 opacity-[0.025]"
+         style="background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:64px 64px;"
+         aria-hidden="true"></div>
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+      <div class="inline-flex items-center gap-2 glass-card rounded-full px-4 py-1.5 mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#00C853]" aria-hidden="true"></span>
+        <span class="text-slate-300 text-xs font-medium">No credit card required</span>
+      </div>
+      <h2 id="cta-heading" class="text-white text-4xl lg:text-6xl font-bold tracking-tight mb-5">
+        Your financial future<br/>
+        <span class="text-gradient">starts today.</span>
+      </h2>
+      <p class="text-slate-400 text-lg mb-8">Join 3 million+ Canadians already building wealth with Wealthsimple. It takes 5 minutes to get started.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#" class="btn-primary text-[#0D1117] font-semibold text-base px-8 py-4 rounded-xl cursor-pointer">Create your free account</a>
+        <a href="#" class="btn-secondary font-medium text-base px-8 py-4 rounded-xl cursor-pointer">Learn more</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer class="bg-[#161B22] border-t border-white/5 pt-14 pb-8" role="contentinfo">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+
+        <div class="col-span-2 md:col-span-1">
+          <a href="#" class="flex items-center gap-2 mb-4 cursor-pointer" aria-label="Wealthsimple Home">
+            <svg width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <rect width="28" height="28" rx="7" fill="#00C853"/>
+              <path d="M6 10l4 8 4-6 4 6 4-8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="text-white font-semibold text-sm">wealthsimple</span>
+          </a>
+          <p class="text-slate-500 text-xs leading-relaxed">Making financial freedom accessible to everyone in Canada.</p>
+        </div>
+
+        <div>
+          <p class="text-white text-xs font-semibold uppercase tracking-widest mb-4">Products</p>
+          <ul class="space-y-2.5 text-slate-400 text-sm" role="list">
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Invest</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Save</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Tax</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Advisors</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Premium</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="text-white text-xs font-semibold uppercase tracking-widest mb-4">Company</p>
+          <ul class="space-y-2.5 text-slate-400 text-sm" role="list">
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">About us</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Careers</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Blog</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Press</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="text-white text-xs font-semibold uppercase tracking-widest mb-4">Legal</p>
+          <ul class="space-y-2.5 text-slate-400 text-sm" role="list">
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Privacy policy</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Terms of use</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Security</a></li>
+            <li role="listitem"><a href="#" class="hover:text-white transition-colors cursor-pointer">Accessibility</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="text-white text-xs font-semibold uppercase tracking-widest mb-4">Follow us</p>
+          <div class="flex gap-3">
+            <a href="#" class="w-8 h-8 rounded-lg glass-card flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer" aria-label="Twitter / X">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="#" class="w-8 h-8 rounded-lg glass-card flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer" aria-label="Instagram">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <a href="#" class="w-8 h-8 rounded-lg glass-card flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer" aria-label="LinkedIn">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-slate-500 text-xs">&copy; 2026 Wealthsimple Inc. All rights reserved.</p>
+        <p class="text-slate-600 text-xs max-w-xl text-center sm:text-right leading-relaxed">
+          Wealthsimple is registered as a Portfolio Manager in all Canadian provinces and territories. Investing involves risk. This is a design concept and not affiliated with Wealthsimple Inc.
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
 </body>
 </html>
