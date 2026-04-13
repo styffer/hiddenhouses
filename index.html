@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astro Frame — Hidden Houses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent: #c8d8f0;
+  --accent-warm: #c9a84c;
+  --bg-deep: #020408;
+  --text-primary: #e8eef8;
+  --text-muted: rgba(200,216,240,0.55);
+  --text-dim: rgba(200,216,240,0.3);
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Jost', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── STARS BACKGROUND ─────────────────────────────────── */
+#starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── NAV ──────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 40px;
+  background: linear-gradient(to bottom, rgba(2,4,8,0.9) 0%, transparent 100%);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 15px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+/* ── HERO ─────────────────────────────────────────────── */
+#hero {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 100px 48px 48px;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* LEFT — preview panel */
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 200;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  align-self: flex-start;
+}
+
+.frame-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: rgba(8,16,30,0.6);
+  border: 1px solid rgba(200,216,240,0.08);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  backdrop-filter: blur(8px);
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#chartCanvas {
+  display: block;
+  width: 300px;
+  height: 300px;
+}
+
+.frame-name {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(200,216,240,0.5);
+  text-align: center;
+}
+
+.frame-meta {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.meta-item { text-align: center; }
+.meta-label {
+  font-size: 8px;
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: block;
+}
+.meta-val {
+  font-size: 9px;
+  font-weight: 300;
+  color: var(--accent);
+  display: block;
+  margin-top: 2px;
+}
+
+/* VIBES */
+.vibes-strip {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.vibe-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+.vibe-btn.active { border-color: rgba(200,216,240,0.7); transform: scale(1.12); }
+.vibe-btn canvas { width: 100%; height: 100%; display: block; }
+.vibe-sep {
+  width: 1px;
+  height: 20px;
+  background: rgba(200,216,240,0.12);
+  margin: 0 4px;
+}
+
+/* ASPECTS TOGGLE */
+.aspects-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.aspects-lbl {
+  font-size: 10px;
+  font-weight: 200;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.toggle {
+  position: relative;
+  width: 32px;
+  height: 17px;
+  background: rgba(200,216,240,0.12);
+  border-radius: 9px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+.toggle.on { background: rgba(200,216,240,0.35); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  left: 3px; top: 3px;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: white;
+  transition: left 0.2s;
+}
+.toggle.on::after { left: 18px; }
+
+/* RIGHT — form panel */
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hero-heading h1 {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.hero-heading h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 14px;
+  font-weight: 200;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 380px;
+}
+
+/* FORM */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field-label {
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.field-input {
+  background: rgba(200,216,240,0.05);
+  border: 1px solid rgba(200,216,240,0.1);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+.field-input::placeholder { color: rgba(200,216,240,0.2); }
+.field-input:focus {
+  border-color: rgba(200,216,240,0.3);
+  background: rgba(200,216,240,0.08);
+}
+
+/* PRICE + CTA */
+.purchase-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.price-line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.price-main {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.price-note {
+  font-size: 12px;
+  font-weight: 200;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.cta-btn {
+  width: 100%;
+  padding: 16px 24px;
+  background: rgba(200,216,240,0.1);
+  border: 1px solid rgba(200,216,240,0.25);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(200,216,240,0.08) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cta-btn:hover {
+  background: rgba(200,216,240,0.16);
+  border-color: rgba(200,216,240,0.4);
+  transform: translateY(-1px);
+}
+.cta-btn:hover::before { opacity: 1; }
+.cta-btn:active { transform: translateY(0); }
+
+.cta-note {
+  font-size: 10px;
+  font-weight: 200;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.planet-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.planet-pill {
+  background: rgba(200,216,240,0.04);
+  border: 1px solid rgba(200,216,240,0.07);
+  border-radius: 4px;
+  padding: 4px 6px;
+  text-align: center;
+}
+.pp-sym { font-size: 12px; display: block; }
+.pp-name { font-size: 7px; color: var(--text-dim); display: block; letter-spacing: 0.08em; }
+.pp-pos { font-size: 8px; color: var(--accent); display: block; font-weight: 300; }
+
+/* ── SCROLL SECTIONS ──────────────────────────────────── */
+#story {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 48px;
+}
+
+.scroll-divider {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 80px;
+}
+
+.scroll-divider::before,
+.scroll-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(200,216,240,0.1);
+}
+
+.scroll-divider span {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+}
+
+/* Product photos placeholder */
+.photos-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 100px;
+}
+
+.photo-card {
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  background: rgba(200,216,240,0.04);
+  border: 1px solid rgba(200,216,240,0.08);
+  aspect-ratio: 3/4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-card:first-child { aspect-ratio: 2/3; }
+
+.photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: rgba(200,216,240,0.15);
+  text-align: center;
+  padding: 20px;
+}
+
+.photo-placeholder svg {
+  width: 32px;
+  height: 32px;
+  opacity: 0.4;
+}
+
+.photo-placeholder span {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 200;
+}
+
+/* Copy section */
+.copy-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  margin-bottom: 100px;
+}
+
+.copy-left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.copy-eyebrow {
+  font-size: 9px;
+  font-weight: 200;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.copy-heading {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 300;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.copy-heading em { font-style: italic; color: var(--accent); }
+
+.copy-body {
+  font-size: 14px;
+  font-weight: 200;
+  line-height: 1.9;
+  color: var(--text-muted);
+}
+
+.copy-right {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 48px;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(200,216,240,0.06);
+}
+
+.feature-item:last-child { border-bottom: none; }
+
+.feature-num {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.feature-title {
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.feature-desc {
+  font-size: 12px;
+  font-weight: 200;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+/* Bottom CTA */
+.bottom-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.bottom-cta-heading {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.bottom-cta-sub {
+  font-size: 13px;
+  font-weight: 200;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.bottom-cta-btn {
+  padding: 16px 48px;
+  background: transparent;
+  border: 1px solid rgba(200,216,240,0.3);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+}
+.bottom-cta-btn:hover {
+  background: rgba(200,216,240,0.08);
+  border-color: rgba(200,216,240,0.5);
+}
+
+/* FOOTER */
+footer {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 40px;
+  border-top: 1px solid rgba(200,216,240,0.06);
+}
+
+footer p {
+  font-size: 10px;
+  font-weight: 200;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ── ANIMATIONS ───────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-left  { animation: fadeUp 0.9s ease both; }
+.hero-right { animation: fadeUp 0.9s ease 0.15s both; }
+
+/* ── RESPONSIVE ───────────────────────────────────────── */
+@media (max-width: 900px) {
+  #hero {
+    grid-template-columns: 1fr;
+    padding: 90px 24px 40px;
+    gap: 40px;
+    min-height: auto;
+  }
+  .hero-left { max-width: 500px; margin: 0 auto; width: 100%; }
+  .copy-section { grid-template-columns: 1fr; gap: 40px; }
+  .photos-grid { grid-template-columns: 1fr 1fr; }
+  .photos-grid .photo-card:first-child { grid-column: 1 / -1; aspect-ratio: 16/9; }
+  #story { padding: 60px 24px; }
+  .field-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<nav>
+  <a class="wordmark" href="#">Hidden Houses</a>
+</nav>
+
+<section id="hero">
+  <!-- LEFT: CHART PREVIEW -->
+  <div class="hero-left">
+    <span class="hero-eyebrow">Step 2 — preview your frame</span>
+    <div class="frame-card" id="frameCard">
+      <div class="chart-wrap">
+        <canvas id="chartCanvas" width="300" height="300"></canvas>
+      </div>
+      <div class="frame-name" id="nameDisplay">Your Name</div>
+      <div class="frame-meta">
+        <div class="meta-item">
+          <span class="meta-label">Date</span>
+          <span class="meta-val" id="metaDate">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">City</span>
+          <span class="meta-val" id="metaLoc">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">ASC</span>
+          <span class="meta-val" id="metaAsc">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Sun</span>
+          <span class="meta-val" id="metaSun">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Moon</span>
+          <span class="meta-val" id="metaMoon">—</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:12px;">
+        <div class="vibes-strip" id="vibesStrip"></div>
+        <div class="vibe-sep"></div>
+        <div class="aspects-row">
+          <span class="aspects-lbl">Aspects</span>
+          <button class="toggle" id="aspectToggle" onclick="toggleAspects()"></button>
+        </div>
+      </div>
+      <div id="planetGrid" style="display:none;width:100%">
+        <div class="planet-grid" id="planetList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: FORM -->
+  <div class="hero-right">
+    <div class="hero-heading">
+      <h1>Your cosmos,<br><em>cast in relief.</em></h1>
+      <p class="hero-sub">A handcrafted 3D birth chart, precisely calculated and sculpted in your chosen aesthetic. Every planet, every house — yours alone.</p>
+    </div>
+
+    <div class="form-section">
+      <span style="font-size:10px;font-weight:200;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim)">Step 1 — your birth details</span>
+      <div class="field-group">
+        <label class="field-label">Full name</label>
+        <input class="field-input" type="text" id="inputName" placeholder="e.g. Sophia Rivers" oninput="updateName(this.value)">
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Birth date</label>
+          <input class="field-input" type="date" id="inputDate" onchange="tryCalc()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Birth time (local)</label>
+          <input class="field-input" type="time" id="inputTime" value="12:00" onchange="tryCalc()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Birth city</label>
+          <input class="field-input" type="text" id="inputCity" placeholder="e.g. New York" oninput="updateCity(this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">UTC offset</label>
+          <input class="field-input" type="number" id="inputUTC" value="-5" min="-12" max="14" step="0.5" onchange="tryCalc()">
+        </div>
+      </div>
+    </div>
+
+    <div class="purchase-row">
+      <div class="price-line">
+        <span class="price-main">$79.99</span>
+        <span class="price-note">+ shipping · made to order</span>
+      </div>
+      <button class="cta-btn" onclick="handleOrder()">Order my Astro Frame</button>
+      <p class="cta-note">Handcrafted in Astoria, NY &nbsp;·&nbsp; Ships in 7–10 days</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── STORY SECTION ─────────────────────────────────── -->
+<section id="story">
+  <div class="scroll-divider"><span>the object</span></div>
+
+  <!-- Photos placeholder -->
+  <div class="photos-grid">
+    <div class="photo-card">
+      <div class="photo-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span>Product photo coming soon</span>
+      </div>
+    </div>
+    <div class="photo-card">
+      <div class="photo-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span>Detail shot</span>
+      </div>
+    </div>
+    <div class="photo-card">
+      <div class="photo-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span>In situ</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copy -->
+  <div class="copy-section">
+    <div class="copy-left">
+      <span class="copy-eyebrow">Made for you, only you</span>
+      <h2 class="copy-heading">The sky at the moment<br><em>you arrived.</em></h2>
+      <p class="copy-body">
+        Every Astro Frame begins with a precise astronomical calculation — the exact position of every planet, every house, every angle at the moment of your birth. Then it becomes an object: a circular relief map, 3D-printed in soy-based resin, mounted in a gallery frame and shipped to your door.
+      </p>
+      <p class="copy-body">
+        No two charts are alike. No two frames are alike. This is not a print. It is a sculpture of your moment.
+      </p>
+    </div>
+    <div class="copy-right">
+      <div class="feature-item">
+        <span class="feature-num">i.</span>
+        <span class="feature-title">Placidus house system</span>
+        <span class="feature-desc">The most widely used system in Western astrology, calculated precisely for your birth coordinates.</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-num">ii.</span>
+        <span class="feature-title">3D-printed in relief</span>
+        <span class="feature-desc">Each chart is physically sculpted — planets, aspects, and house lines rendered in dimensional depth.</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-num">iii.</span>
+        <span class="feature-title">Five distinct aesthetics</span>
+        <span class="feature-desc">Celestial, Aurora, Stellar, Void, or Clear — each a complete visual world.</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-num">iv.</span>
+        <span class="feature-title">Handcrafted in Astoria, NY</span>
+        <span class="feature-desc">Made to order, one at a time. Ships in 7–10 business days.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="bottom-cta">
+    <h3 class="bottom-cta-heading">Ready to see yours?</h3>
+    <p class="bottom-cta-sub">Enter your birth details above and preview your chart in real time.</p>
+    <a class="bottom-cta-btn" href="#hero">Customize my frame →</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Hidden Houses &nbsp;·&nbsp; Astoria, New York &nbsp;·&nbsp; All rights reserved</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.js"></script>
+<script>
+const STRIPE_LINK = 'https://buy.stripe.com/6oU28tdxe6ot61r5oR7wA00';
+
+// ── STARFIELD ─────────────────────────────────────────
+(function(){
+  const cv = document.getElementById('starfield');
+  const ctx = cv.getContext('2d');
+  function resize(){ cv.width = innerWidth; cv.height = innerHeight; draw(); }
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.fillStyle = '#020408';
+    ctx.fillRect(0,0,cv.width,cv.height);
+    for(let i=0;i<500;i++){
+      const x=Math.random()*cv.width, y=Math.random()*cv.height;
+      const big = Math.random()<0.03;
+      ctx.beginPath();
+      ctx.arc(x,y,big?1.4:Math.random()*0.7+0.1,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,220,255,${big?0.8:0.1+Math.random()*0.5})`;
+      ctx.fill();
+    }
+    // Milky way band
+    const band = ctx.createLinearGradient(0,cv.height*0.3,cv.width,cv.height*0.7);
+    band.addColorStop(0,'rgba(60,80,140,0)');
+    band.addColorStop(0.5,'rgba(80,110,180,0.07)');
+    band.addColorStop(1,'rgba(60,80,140,0)');
+    ctx.fillStyle=band; ctx.fillRect(0,0,cv.width,cv.height);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+})();
+
+// ── VIBES ─────────────────────────────────────────────
+const VIBES = {
+  stellar: {
+    name:'Stellar', accent:'#c8d8f0',
+    paintBg:(ctx,W,H)=>{ctx.fillStyle='#020408';ctx.fillRect(0,0,W,H);for(let i=0;i<400;i++){const x=Math.random()*W,y=Math.random()*H,big=Math.random()<.04;ctx.beginPath();ctx.arc(x,y,big?1.5:Math.random()*.7+.2,0,Math.PI*2);ctx.fillStyle=`rgba(200,220,255,${big?.9:.15+Math.random()*.6})`;ctx.fill();}const band=ctx.createLinearGradient(0,H*.3,W,H*.7);band.addColorStop(0,'rgba(60,80,140,0)');band.addColorStop(.5,'rgba(100,130,200,0.16)');band.addColorStop(1,'rgba(60,80,140,0)');ctx.fillStyle=band;ctx.fillRect(0,0,W,H);},
+    paintDisc:(ctx,cx,cy,R)=>{ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle='#020408';ctx.fill();for(let i=0;i<280;i++){const a=i*2.618,r=Math.sqrt(i/280)*R*.95,big=Math.random()<.04;ctx.beginPath();ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),big?1.3:Math.random()*.6+.15,0,Math.PI*2);ctx.fillStyle=`rgba(200,220,255,${big?.85:.15+Math.random()*.55})`;ctx.fill();}const band=ctx.createLinearGradient(cx-R,cy-R*.2,cx+R,cy+R*.2);band.addColorStop(0,'rgba(60,80,150,0)');band.addColorStop(.5,'rgba(90,120,200,0.14)');band.addColorStop(1,'rgba(60,80,150,0)');ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=band;ctx.fill();},
+    houseLine:'rgba(200,220,255,0.12)',houseAxis:'rgba(200,220,255,0.7)',signLine:'rgba(200,220,255,0.22)',signBand:'rgba(200,220,255,0.04)',tick5:'rgba(200,220,255,0.3)',tick1:'rgba(200,220,255,0.12)',
+  },
+  celestial: {
+    name:'Celestial', accent:'#c9a84c',
+    paintBg:(ctx,W,H)=>{ctx.fillStyle='#0a0520';ctx.fillRect(0,0,W,H);const g1=ctx.createRadialGradient(W*.3,H*.4,0,W*.3,H*.4,W*.7);g1.addColorStop(0,'rgba(80,20,140,0.5)');g1.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);for(let i=0;i<300;i++){const x=Math.random()*W,y=Math.random()*H,r=Math.random()<.05?1.4:Math.random()<.2?.7:.3;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=`rgba(255,230,160,${.1+Math.random()*.6})`;ctx.fill();}},
+    paintDisc:(ctx,cx,cy,R)=>{ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle='#08051a';ctx.fill();for(let i=0;i<160;i++){const a=i*2.618,r=Math.sqrt(i/160)*R*.9;ctx.beginPath();ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),Math.random()*.7+.2,0,Math.PI*2);ctx.fillStyle=`rgba(255,220,140,${.1+Math.random()*.5})`;ctx.fill();}},
+    houseLine:'rgba(201,168,76,0.15)',houseAxis:'rgba(201,168,76,0.8)',signLine:'rgba(201,168,76,0.3)',signBand:'rgba(201,168,76,0.06)',tick5:'rgba(201,168,76,0.35)',tick1:'rgba(201,168,76,0.15)',
+  },
+  aurora: {
+    name:'Aurora', accent:'#d4a0c8',
+    paintBg:(ctx,W,H)=>{ctx.fillStyle='#0e0618';ctx.fillRect(0,0,W,H);const g1=ctx.createRadialGradient(W*.2,H*.3,0,W*.2,H*.3,W*.65);g1.addColorStop(0,'rgba(130,40,180,0.45)');g1.addColorStop(.5,'rgba(160,30,120,0.2)');g1.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);for(let i=0;i<250;i++){const x=Math.random()*W,y=Math.random()*H,r=Math.random()<.06?1.2:.4;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=`rgba(220,170,255,${.1+Math.random()*.55})`;ctx.fill();}},
+    paintDisc:(ctx,cx,cy,R)=>{ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle='#0a0414';ctx.fill();const g1=ctx.createRadialGradient(cx-R*.3,cy-R*.2,0,cx-R*.3,cy-R*.2,R*.7);g1.addColorStop(0,'rgba(130,40,180,0.4)');g1.addColorStop(1,'rgba(0,0,0,0)');ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=g1;ctx.fill();for(let i=0;i<120;i++){const a=i*2.618,r=Math.sqrt(i/120)*R*.88;ctx.beginPath();ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),Math.random()*.7+.2,0,Math.PI*2);ctx.fillStyle=`rgba(220,160,255,${.15+Math.random()*.5})`;ctx.fill();}},
+    houseLine:'rgba(212,160,200,0.13)',houseAxis:'rgba(212,160,200,0.75)',signLine:'rgba(212,160,200,0.25)',signBand:'rgba(212,160,200,0.06)',tick5:'rgba(212,160,200,0.32)',tick1:'rgba(212,160,200,0.13)',
+  },
+  void: {
+    name:'Void', accent:'#ffffff',
+    paintBg:(ctx,W,H)=>{ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);for(let i=0;i<120;i++){const x=Math.random()*W,y=Math.random()*H;ctx.beginPath();ctx.arc(x,y,Math.random()*.6+.1,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${.05+Math.random()*.25})`;ctx.fill();}},
+    paintDisc:(ctx,cx,cy,R)=>{ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle='#000';ctx.fill();for(let i=0;i<55;i++){const a=i*2.618,r=Math.sqrt(i/55)*R*.9;ctx.beginPath();ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),Math.random()*.4+.1,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${.05+Math.random()*.2})`;ctx.fill();}},
+    houseLine:'rgba(255,255,255,0.1)',houseAxis:'rgba(255,255,255,0.7)',signLine:'rgba(255,255,255,0.2)',signBand:'rgba(255,255,255,0.03)',tick5:'rgba(255,255,255,0.25)',tick1:'rgba(255,255,255,0.1)',
+  },
+  clear: {
+    name:'Clear', accent:'#3a5a9a',
+    paintBg:(ctx,W,H)=>{const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#d8e4f4');g.addColorStop(.4,'#e4edf8');g.addColorStop(1,'#d0dff0');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);const g1=ctx.createRadialGradient(W*.25,H*.3,0,W*.25,H*.3,W*.6);g1.addColorStop(0,'rgba(100,140,220,0.28)');g1.addColorStop(1,'rgba(0,0,255,0)');ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);for(let i=0;i<180;i++){const x=Math.random()*W,y=Math.random()*H,big=Math.random()<.06,r=big?1.6:Math.random()<.15?.9:.4,alpha=big?.7:Math.random()<.15?.4:.15+Math.random()*.2;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=`rgba(50,90,200,${alpha})`;ctx.fill();if(big){ctx.strokeStyle='rgba(50,90,200,0.3)';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(x-4,y);ctx.lineTo(x+4,y);ctx.stroke();ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x,y+4);ctx.stroke();}}},
+    paintDisc:(ctx,cx,cy,R)=>{ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle='#dce8f8';ctx.fill();const g=ctx.createRadialGradient(cx-R*.2,cy-R*.25,0,cx,cy,R);g.addColorStop(0,'rgba(100,150,240,0.25)');g.addColorStop(1,'rgba(100,140,220,0.05)');ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();for(let i=0;i<100;i++){const a=i*2.618,r=Math.sqrt(i/100)*R*.9,big=Math.random()<.07;ctx.beginPath();ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),big?1.2:Math.random()*.55+.15,0,Math.PI*2);ctx.fillStyle=`rgba(40,80,190,${big?.55:.1+Math.random()*.28})`;ctx.fill();}},
+    houseLine:'rgba(30,60,140,0.12)',houseAxis:'rgba(25,55,130,0.7)',signLine:'rgba(30,60,140,0.22)',signBand:'rgba(30,60,140,0.05)',tick5:'rgba(30,60,140,0.25)',tick1:'rgba(30,60,140,0.11)',
+  },
+};
+
+const ASPECT_DEFS=[{angle:0,orb:8,color:'#888',width:1.6},{angle:180,orb:8,color:'#cc4444',width:1.3},{angle:120,orb:7,color:'#44aa44',width:1.1},{angle:90,orb:7,color:'#cc8833',width:1.1},{angle:60,orb:5,color:'#338899',width:.8}];
+const SYMS=['☉','☽','☿','♀','♂','♃','♄','♅','♆'];
+const NAMES_P=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'];
+const SIGNS=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const SSHOR=['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
+const SIGN_SYMS=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+
+const D2R=Math.PI/180;
+function mod360(x){return((x%360)+360)%360;}
+function sinD(d){return Math.sin(d*D2R);}function cosD(d){return Math.cos(d*D2R);}
+function tanD(d){return Math.tan(d*D2R);}function asinD(x){return Math.asin(x)*180/Math.PI;}
+function atan2D(y,x){return Math.atan2(y,x)*180/Math.PI;}
+
+let currentVibe='stellar',currentLons=null,currentAsc=null,currentCusps=null,showAspects=false;
+function getA(){return window.Astronomy;}
+function jdFromUTC(d){return d.getTime()/86400000+2440587.5;}
+function gmstDeg(jd){const T=(jd-2451545)/36525;return mod360(280.46061837+360.98564736629*(jd-2451545)+.000387933*T*T-T*T*T/38710000);}
+function obliquity(jd){const T=(jd-2451545)/36525;return 23.439291111-.013004167*T-.000000164*T*T+.000000504*T*T*T;}
+
+function placidus(ramc,eps,lat){
+  let mc=mod360(atan2D(sinD(ramc)*cosD(eps)-tanD(0)*sinD(eps),cosD(ramc)));
+  if(mod360(mc-ramc)>90&&mod360(mc-ramc)<270)mc=mod360(mc+180);
+  let asc=mod360(atan2D(-cosD(ramc),sinD(ramc)*cosD(eps)+tanD(lat)*sinD(eps)));
+  if(mod360(asc-mc)>180)asc=mod360(asc+180);
+  const ic=mod360(mc+180),dsc=mod360(asc+180);
+  function pc(n,up){let L=up?mod360(mc+90*n):mod360(ic+90*n);for(let i=0;i<50;i++){const decl=asinD(sinD(eps)*sinD(L)),dsa=mod360(atan2D(tanD(decl)*tanD(lat),-1)+90),sa=up?dsa:180-dsa,ra_L=mod360(atan2D(sinD(L)*cosD(eps)-tanD(0)*sinD(eps),cosD(L))),oa2=mod360(ra_L-atan2D(sinD(decl)*sinD(lat)/cosD(lat),cosD(decl))),tgt=up?mod360(ramc+n*sa):mod360(ramc+180+n*sa);L=mod360(L+(mod360(tgt-oa2+180)-180)*.5);}return L;}
+  return[asc,pc(1/3,false),pc(2/3,false),ic,mod360(ic+30),mod360(ic+60),dsc,mod360(dsc+30),mod360(dsc+60),mc,pc(1/3,true),pc(2/3,true)];
+}
+
+function eclLon(n,time){const A=getA();if(n==='Sun')return mod360(A.SunPosition(time).elon);if(n==='Moon')return mod360(A.Ecliptic(A.GeoMoon(time)).elon);return mod360(A.Ecliptic(A.GeoVector(A.Body[n],time,false)).elon);}
+function lonToAngle(lon,asc){return Math.PI-mod360(lon-asc)*D2R;}
+
+function drawChart(vibe,lons,ascDeg,cusps){
+  const cv=document.getElementById('chartCanvas'),ctx=cv.getContext('2d'),v=VIBES[vibe];
+  const W=300,H=300,cx=W/2,cy=H/2,Ro=146,Rso=127,Rsi=108,Rhi=38,Rp=81;
+  ctx.clearRect(0,0,W,H);
+  const asc=ascDeg!==null?ascDeg:0;
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,Ro,0,Math.PI*2);ctx.clip();v.paintDisc(ctx,cx,cy,Ro);ctx.restore();
+  ctx.beginPath();ctx.arc(cx,cy,Ro,0,Math.PI*2);ctx.strokeStyle=v.accent;ctx.lineWidth=1.8;ctx.stroke();
+  for(let deg=0;deg<360;deg++){const a=lonToAngle(deg,asc),is30=deg%30===0,is5=deg%5===0&&!is30,inner=is30?Ro-14:is5?Ro-8:Ro-4;ctx.beginPath();ctx.moveTo(cx+Ro*Math.cos(a),cy+Ro*Math.sin(a));ctx.lineTo(cx+inner*Math.cos(a),cy+inner*Math.sin(a));ctx.strokeStyle=is30?v.signLine:is5?v.tick5:v.tick1;ctx.lineWidth=is30?1:.4;ctx.stroke();}
+  [Rso,Rsi].forEach((r,i)=>{ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle=v.accent+(i===0?'88':'55');ctx.lineWidth=.8;ctx.stroke();});
+  ctx.beginPath();ctx.arc(cx,cy,Rhi,0,Math.PI*2);ctx.strokeStyle=v.accent+'33';ctx.lineWidth=.7;ctx.stroke();
+  for(let i=0;i<12;i++){const a0=lonToAngle(i*30,asc),a1=lonToAngle((i+1)*30,asc);if(i%2===0){ctx.save();ctx.beginPath();ctx.arc(cx,cy,Rso,a0,a1,true);ctx.arc(cx,cy,Rsi,a1,a0,false);ctx.closePath();ctx.fillStyle=v.signBand;ctx.fill();ctx.restore();}ctx.beginPath();ctx.moveTo(cx+Rsi*Math.cos(a0),cy+Rsi*Math.sin(a0));ctx.lineTo(cx+Rso*Math.cos(a0),cy+Rso*Math.sin(a0));ctx.strokeStyle=v.signLine;ctx.lineWidth=.8;ctx.stroke();const amid=lonToAngle(i*30+15,asc),sr=(Rsi+Rso)/2;ctx.font='12px sans-serif';ctx.fillStyle=v.accent+'cc';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(SIGN_SYMS[i],cx+sr*Math.cos(amid),cy+sr*Math.sin(amid));}
+  if(cusps&&cusps.length===12){for(let i=0;i<12;i++){const a=lonToAngle(cusps[i],asc),isAxis=i===0||i===3||i===6||i===9;ctx.beginPath();ctx.moveTo(cx+Rhi*Math.cos(a),cy+Rhi*Math.sin(a));ctx.lineTo(cx+Rsi*Math.cos(a),cy+Rsi*Math.sin(a));ctx.strokeStyle=isAxis?v.houseAxis:v.houseLine;ctx.lineWidth=isAxis?1.8:.5;ctx.stroke();if(isAxis){const aOpp=lonToAngle(mod360(cusps[i]+180),asc);ctx.beginPath();ctx.moveTo(cx+Rsi*Math.cos(a),cy+Rsi*Math.sin(a));ctx.lineTo(cx+Rsi*Math.cos(aOpp),cy+Rsi*Math.sin(aOpp));ctx.strokeStyle=v.houseAxis+'44';ctx.lineWidth=.7;ctx.stroke();}const span=mod360(cusps[(i+1)%12]-cusps[i]),mid=mod360(cusps[i]+span/2),na=lonToAngle(mid,asc),nr=(Rhi+Rsi)/2-2,lbl=i===0?'I':i===3?'IV':i===6?'VII':i===9?'X':(i+1);ctx.font=isAxis?'bold 9px sans-serif':'8px sans-serif';ctx.fillStyle=v.accent+(isAxis?'ff':'44');ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(lbl,cx+nr*Math.cos(na),cy+nr*Math.sin(na));}[{i:0,l:'ASC',m:true},{i:3,l:'IC',m:false},{i:6,l:'DSC',m:false},{i:9,l:'MC',m:true}].forEach(ax=>{const la=lonToAngle(cusps[ax.i],asc),lr=Rhi-12;ctx.font=ax.m?'bold 8px sans-serif':'7px sans-serif';ctx.fillStyle=ax.m?v.accent:v.accent+'88';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ax.l,cx+lr*Math.cos(la),cy+lr*Math.sin(la));});}
+  if(!lons||!lons.length)return;
+  if(showAspects){const asps=[];for(let i=0;i<lons.length;i++)for(let j=i+1;j<lons.length;j++){let d=Math.abs(lons[i]-lons[j]);if(d>180)d=360-d;for(const asp of ASPECT_DEFS){if(Math.abs(d-asp.angle)<=asp.orb){asps.push({a:i,b:j,asp});break;}}}asps.forEach(({a,b,asp})=>{const a1=lonToAngle(lons[a],asc),a2=lonToAngle(lons[b],asc);ctx.beginPath();ctx.moveTo(cx+Rp*Math.cos(a1),cy+Rp*Math.sin(a1));ctx.lineTo(cx+Rp*Math.cos(a2),cy+Rp*Math.sin(a2));ctx.strokeStyle=asp.color+'88';ctx.lineWidth=asp.width;ctx.stroke();});}
+  lons.forEach((lon,i)=>{const a=lonToAngle(lon,asc),px=cx+Rp*Math.cos(a),py=cy+Rp*Math.sin(a),isSun=i===0,isMoon=i===1,r=isSun?11:isMoon?10:7;if(isSun||isMoon){ctx.beginPath();ctx.arc(px,py,r+4,0,Math.PI*2);ctx.strokeStyle=v.accent+(isSun?'44':'28');ctx.lineWidth=3;ctx.stroke();}ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fillStyle=isSun?v.accent:isMoon?v.accent+'cc':'rgba(0,0,0,0.6)';ctx.strokeStyle=v.accent;ctx.lineWidth=isSun||isMoon?1.5:1;ctx.fill();ctx.stroke();ctx.font=(isSun?'bold 12px':isMoon?'bold 11px':'9px')+' sans-serif';ctx.fillStyle=isSun?'#000':v.accent;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(SYMS[i],px,py);});
+  lons.forEach((lon,i)=>{const a=lonToAngle(lon,asc);ctx.font='8px sans-serif';ctx.fillStyle=v.accent+'77';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(Math.floor(lon%30)+'°',cx+(Rp+20)*Math.cos(a),cy+(Rp+20)*Math.sin(a));});
+}
+
+function paintThumb(canvas,vibe){const ctx=canvas.getContext('2d'),cx=18,cy=18,R=16;ctx.clearRect(0,0,36,36);VIBES[vibe].paintBg(ctx,36,36);ctx.save();ctx.beginPath();ctx.arc(cx,cy,R*.7,0,Math.PI*2);ctx.clip();VIBES[vibe].paintDisc(ctx,cx,cy,R*.7);ctx.restore();ctx.beginPath();ctx.arc(cx,cy,R*.7,0,Math.PI*2);ctx.strokeStyle=VIBES[vibe].accent;ctx.lineWidth=1;ctx.stroke();}
+
+function buildVibes(){
+  const strip=document.getElementById('vibesStrip');
+  Object.keys(VIBES).forEach(key=>{
+    const btn=document.createElement('button');
+    btn.className='vibe-btn'+(key==='stellar'?' active':'');
+    btn.id='vbtn-'+key; btn.title=VIBES[key].name;
+    btn.onclick=()=>setVibe(key);
+    const tc=document.createElement('canvas');tc.width=36;tc.height=36;
+    paintThumb(tc,key); btn.appendChild(tc); strip.appendChild(btn);
+  });
+}
+
+function setVibe(vibe){
+  currentVibe=vibe;
+  document.querySelectorAll('.vibe-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('vbtn-'+vibe).classList.add('active');
+  drawChart(vibe,currentLons,currentAsc,currentCusps);
+}
+
+function toggleAspects(){
+  showAspects=!showAspects;
+  document.getElementById('aspectToggle').classList.toggle('on',showAspects);
+  drawChart(currentVibe,currentLons,currentAsc,currentCusps);
+}
+
+function updatePlanets(lons){
+  const grid=document.getElementById('planetGrid'),list=document.getElementById('planetList');
+  if(!lons){grid.style.display='none';return;}
+  grid.style.display='block';
+  list.innerHTML=lons.map((lon,i)=>{const si=Math.floor(lon/30),deg=Math.floor(lon%30);return`<div class="planet-pill"><span class="pp-sym">${SYMS[i]}</span><span class="pp-name">${NAMES_P[i]}</span><span class="pp-pos">${deg}° ${SSHOR[si]}</span></div>`;}).join('');
+}
+
+function tryCalc(){
+  const dateVal=document.getElementById('inputDate').value,timeVal=document.getElementById('inputTime').value||'12:00';
+  const utcOff=parseFloat(document.getElementById('inputUTC').value)||0;
+  if(!dateVal)return;
+  setTimeout(()=>{
+    try{
+      const A=getA();if(!A)return;
+      const [yr,mo,dy]=dateVal.split('-').map(Number),[h,m]=timeVal.split(':').map(Number);
+      const utcDate=new Date(Date.UTC(yr,mo-1,dy,h,m,0)-utcOff*3600000);
+      const jd=jdFromUTC(utcDate),eps=obliquity(jd),gst=gmstDeg(jd);
+      // Default to NYC coords — replaced by geocoding
+      const lat=40.7128,lon=-74.006,ramc=mod360(gst+lon);
+      const time=A.MakeTime(utcDate);
+      const lons=['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune'].map(n=>eclLon(n,time));
+      const cusps=placidus(ramc,eps,lat);
+      currentLons=lons;currentAsc=cusps[0];currentCusps=cusps;
+      const fmt=l=>`${Math.floor(l%30)}° ${SIGNS[Math.floor(l/30)].substring(0,3)}`;
+      document.getElementById('metaDate').textContent=new Date(Date.UTC(yr,mo-1,dy)).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+      document.getElementById('metaAsc').textContent=fmt(cusps[0]);
+      document.getElementById('metaSun').textContent=fmt(lons[0]);
+      document.getElementById('metaMoon').textContent=fmt(lons[1]);
+      drawChart(currentVibe,lons,cusps[0],cusps);
+      updatePlanets(lons);
+    }catch(e){console.error(e);}
+  },30);
+}
+
+function updateName(v){
+  document.getElementById('nameDisplay').textContent=v||'Your Name';
+}
+function updateCity(v){
+  document.getElementById('metaLoc').textContent=v?v.split(',')[0].trim().substring(0,14):'—';
+}
+
+function handleOrder(){
+  const name=document.getElementById('inputName').value;
+  const date=document.getElementById('inputDate').value;
+  const city=document.getElementById('inputCity').value;
+  if(!name||!date||!city){
+    alert('Please fill in your name, birth date, and city before ordering.');
+    return;
+  }
+  window.open(STRIPE_LINK,'_blank');
+}
+
+// Init
+buildVibes();
+setTimeout(()=>drawChart('stellar',null,null,null),200);
+</script>
+</body>
+</html>
