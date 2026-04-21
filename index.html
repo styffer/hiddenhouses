@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Astro Frame — Hidden Houses</title>
+<script src="https://js.stripe.com/v3/"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
@@ -728,6 +729,46 @@ footer p {
       <button class="cta-btn" onclick="handleOrder()">Order my Astro Frame</button>
       <p class="cta-note">Handcrafted in Astoria, NY &nbsp;·&nbsp; Ships in 7–10 days</p>
     </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div id="checkoutOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(2,4,8,0.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+      <div id="checkoutModal" style="background:#0a0f1a;border:1px solid rgba(200,216,240,0.12);border-radius:12px;padding:40px;width:100%;max-width:480px;margin:20px;position:relative;max-height:90vh;overflow-y:auto;">
+        <button onclick="closeCheckout()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(200,216,240,0.4);font-size:22px;cursor:pointer;line-height:1;">×</button>
+
+        <!-- Order summary -->
+        <div style="margin-bottom:28px;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(200,216,240,0.4);margin-bottom:8px;">Your order</p>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(200,216,240,0.08);padding-bottom:16px;margin-bottom:16px;">
+            <div>
+              <p style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:#e8eef8;">Astro Frame</p>
+              <p id="orderSummary" style="font-size:11px;color:rgba(200,216,240,0.4);margin-top:3px;letter-spacing:0.05em;"></p>
+            </div>
+            <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#e8eef8;">$79.99</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(200,216,240,0.35);letter-spacing:0.05em;">
+            <span>Shipping</span><span id="shippingNote">Calculated at next step</span>
+          </div>
+        </div>
+
+        <!-- Stripe Elements -->
+        <div id="paymentForm">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(200,216,240,0.4);margin-bottom:16px;">Payment details</p>
+          <div id="payment-element" style="margin-bottom:20px;"></div>
+          <div id="payment-message" style="display:none;font-size:12px;color:#ff6b6b;margin-bottom:12px;padding:10px;background:rgba(255,100,100,0.08);border-radius:6px;border:1px solid rgba(255,100,100,0.2);"></div>
+          <button id="submitPayment" onclick="submitPayment()" style="width:100%;padding:16px;background:rgba(200,216,240,0.1);border:1px solid rgba(200,216,240,0.25);border-radius:6px;font-family:'Jost',sans-serif;font-size:11px;font-weight:300;letter-spacing:0.25em;text-transform:uppercase;color:#e8eef8;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,216,240,0.18)'" onmouseout="this.style.background='rgba(200,216,240,0.1)'">
+            Complete order · $79.99
+          </button>
+          <p style="text-align:center;font-size:10px;color:rgba(200,216,240,0.25);margin-top:14px;letter-spacing:0.1em;">
+            Secured by Stripe &nbsp;·&nbsp; SSL encrypted
+          </p>
+        </div>
+
+        <div id="paymentSuccess" style="display:none;text-align:center;padding:20px 0;">
+          <p style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;font-style:italic;color:#e8eef8;margin-bottom:12px;">Thank you.</p>
+          <p style="font-size:13px;color:rgba(200,216,240,0.6);line-height:1.7;">Your Astro Frame is being crafted.<br>You'll receive a confirmation by email shortly.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -813,34 +854,77 @@ footer p {
 
 <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.js"></script>
 <script>
-const STRIPE_LINK = 'https://buy.stripe.com/6oU28tdxe6ot61r5oR7wA00';
-
 // ── STARFIELD ─────────────────────────────────────────
 (function(){
   const cv = document.getElementById('starfield');
   const ctx = cv.getContext('2d');
-  function resize(){ cv.width = innerWidth; cv.height = innerHeight; draw(); }
-  function draw(){
-    ctx.clearRect(0,0,cv.width,cv.height);
-    ctx.fillStyle = '#020408';
-    ctx.fillRect(0,0,cv.width,cv.height);
+  let stars = [];
+
+  function buildStars(){
+    stars = [];
     for(let i=0;i<500;i++){
-      const x=Math.random()*cv.width, y=Math.random()*cv.height;
       const big = Math.random()<0.03;
-      ctx.beginPath();
-      ctx.arc(x,y,big?1.4:Math.random()*0.7+0.1,0,Math.PI*2);
-      ctx.fillStyle=`rgba(200,220,255,${big?0.8:0.1+Math.random()*0.5})`;
-      ctx.fill();
+      const med = !big && Math.random()<0.15;
+      stars.push({
+        x: Math.random()*cv.width,
+        y: Math.random()*cv.height,
+        r: big ? 1.4+Math.random()*0.4 : med ? 0.6+Math.random()*0.3 : 0.15+Math.random()*0.4,
+        baseAlpha: big ? 0.6+Math.random()*0.3 : med ? 0.3+Math.random()*0.3 : 0.08+Math.random()*0.25,
+        speed: 0.3+Math.random()*1.2,
+        phase: Math.random()*Math.PI*2,
+        big, med
+      });
     }
+  }
+
+  function draw(t){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.fillStyle='#020408';
+    ctx.fillRect(0,0,cv.width,cv.height);
+
     // Milky way band
-    const band = ctx.createLinearGradient(0,cv.height*0.3,cv.width,cv.height*0.7);
+    const band=ctx.createLinearGradient(0,cv.height*0.3,cv.width,cv.height*0.7);
     band.addColorStop(0,'rgba(60,80,140,0)');
     band.addColorStop(0.5,'rgba(80,110,180,0.07)');
     band.addColorStop(1,'rgba(60,80,140,0)');
     ctx.fillStyle=band; ctx.fillRect(0,0,cv.width,cv.height);
+
+    const ts = t * 0.001;
+    for(const s of stars){
+      // Twinkle: sine wave per star with individual speed and phase
+      const twinkle = 0.5 + 0.5*Math.sin(ts*s.speed + s.phase);
+      // Big stars twinkle more dramatically
+      const alpha = s.big
+        ? s.baseAlpha * (0.4 + 0.6*twinkle)
+        : s.med
+          ? s.baseAlpha * (0.55 + 0.45*twinkle)
+          : s.baseAlpha * (0.7 + 0.3*twinkle);
+
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(200,220,255,${alpha.toFixed(3)})`;
+      ctx.fill();
+
+      // Cross sparkle on big bright stars
+      if(s.big && twinkle > 0.7){
+        const sparkAlpha = ((twinkle-0.7)/0.3)*0.25;
+        ctx.strokeStyle=`rgba(200,220,255,${sparkAlpha.toFixed(3)})`;
+        ctx.lineWidth=0.5;
+        const sl = s.r*3.5;
+        ctx.beginPath();ctx.moveTo(s.x-sl,s.y);ctx.lineTo(s.x+sl,s.y);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(s.x,s.y-sl);ctx.lineTo(s.x,s.y+sl);ctx.stroke();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  function resize(){
+    cv.width=innerWidth; cv.height=innerHeight;
+    buildStars();
   }
   window.addEventListener('resize', resize);
   resize();
+  requestAnimationFrame(draw);
 })();
 
 // ── VIBES ─────────────────────────────────────────────
@@ -995,16 +1079,153 @@ function updateCity(v){
   document.getElementById('metaLoc').textContent=v?v.split(',')[0].trim().substring(0,14):'—';
 }
 
-function handleOrder(){
-  const name=document.getElementById('inputName').value;
-  const date=document.getElementById('inputDate').value;
-  const city=document.getElementById('inputCity').value;
+const STRIPE_PK = 'pk_test_51THy2RRoRxcMNwBp5fpN4xlawNrTbHjsikActpv831a4GF24qeKVLTUJKH8LTZL1DsJVrBiXggLuw8PYVFcrWrHQ00XhrWr6k3';
+let stripe, elements, paymentElement;
+
+const stripeAppearance = {
+  theme: 'night',
+  variables: {
+    colorPrimary: '#c8d8f0',
+    colorBackground: '#0d1525',
+    colorText: '#e8eef8',
+    colorDanger: '#ff6b6b',
+    colorTextSecondary: 'rgba(200,216,240,0.55)',
+    colorTextPlaceholder: 'rgba(200,216,240,0.25)',
+    borderRadius: '6px',
+    fontFamily: '"Jost", sans-serif',
+    fontSizeBase: '13px',
+    spacingUnit: '4px',
+  },
+  rules: {
+    '.Input': {
+      border: '1px solid rgba(200,216,240,0.15)',
+      backgroundColor: 'rgba(200,216,240,0.05)',
+      color: '#e8eef8',
+      padding: '10px 14px',
+    },
+    '.Input:focus': {
+      border: '1px solid rgba(200,216,240,0.4)',
+      boxShadow: 'none',
+    },
+    '.Label': {
+      fontSize: '10px',
+      letterSpacing: '0.15em',
+      textTransform: 'uppercase',
+      color: 'rgba(200,216,240,0.4)',
+      marginBottom: '6px',
+    },
+    '.Tab': {
+      border: '1px solid rgba(200,216,240,0.12)',
+      backgroundColor: 'rgba(200,216,240,0.04)',
+    },
+    '.Tab--selected': {
+      border: '1px solid rgba(200,216,240,0.35)',
+      backgroundColor: 'rgba(200,216,240,0.1)',
+    },
+    '.Error': { color: '#ff6b6b' },
+  }
+};
+
+async function handleOrder(){
+  const name = document.getElementById('inputName').value;
+  const date = document.getElementById('inputDate').value;
+  const city = document.getElementById('inputCity').value;
   if(!name||!date||!city){
     alert('Please fill in your name, birth date, and city before ordering.');
     return;
   }
-  window.open(STRIPE_LINK,'_blank');
+
+  // Show overlay
+  const overlay = document.getElementById('checkoutOverlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Order summary
+  document.getElementById('orderSummary').textContent =
+    name + ' · ' + new Date(date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' · ' + city + ' · ' + currentVibe;
+
+  // Init Stripe if needed
+  if(!stripe) stripe = Stripe(STRIPE_PK);
+
+  try {
+    // Create Payment Intent via Netlify Function
+    const res = await fetch('/.netlify/functions/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, date, city, vibe: currentVibe, aspects: showAspects }),
+    });
+    const { clientSecret, error } = await res.json();
+    if(error) throw new Error(error);
+
+    elements = stripe.elements({ appearance: stripeAppearance, clientSecret });
+    paymentElement = elements.create('payment', {
+      layout: { type: 'tabs', defaultCollapsed: false },
+      fields: { billingDetails: { address: { country: 'auto' } } },
+    });
+    paymentElement.mount('#payment-element');
+  } catch(err) {
+    showPaymentMessage('Failed to initialize payment. Please try again.');
+  }
 }
+
+function closeCheckout(){
+  document.getElementById('checkoutOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+  document.getElementById('paymentSuccess').style.display = 'none';
+  document.getElementById('paymentForm').style.display = 'block';
+  if(paymentElement){ paymentElement.unmount(); paymentElement = null; elements = null; }
+}
+
+function showPaymentMessage(msg){
+  const el = document.getElementById('payment-message');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function submitPayment(){
+  if(!stripe || !elements) return;
+  const btn = document.getElementById('submitPayment');
+  btn.textContent = 'Processing…';
+  btn.disabled = true;
+  document.getElementById('payment-message').style.display = 'none';
+
+  const { error } = await stripe.confirmPayment({
+    elements,
+    confirmParams: {
+      return_url: window.location.origin + '/?success=1',
+      payment_method_data: {
+        billing_details: {
+          name: document.getElementById('inputName').value,
+        }
+      }
+    },
+    redirect: 'if_required',
+  });
+
+  if(error){
+    showPaymentMessage(error.message);
+    btn.textContent = 'Complete order · $79.99';
+    btn.disabled = false;
+  } else {
+    document.getElementById('paymentForm').style.display = 'none';
+    document.getElementById('paymentSuccess').style.display = 'block';
+  }
+}
+
+// Close overlay on background click
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('checkoutOverlay').addEventListener('click', e=>{
+    if(e.target === document.getElementById('checkoutOverlay')) closeCheckout();
+  });
+  // Handle success redirect
+  if(new URLSearchParams(location.search).get('success')){
+    setTimeout(()=>{
+      document.getElementById('checkoutOverlay').style.display='flex';
+      document.getElementById('paymentForm').style.display='none';
+      document.getElementById('paymentSuccess').style.display='block';
+    }, 500);
+  }
+});
 
 // Init
 buildVibes();
